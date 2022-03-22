@@ -110,14 +110,16 @@ describe("MMO Game contract", function () {
 
       await hardhatToken
         .attack()
-        .to.emit(hardhatToken, "AttackComplete")
+        .to.emit(hardhatToken, "AttackStarted")
+        .and.to.emit(hardhatToken, "AttackComplete")
         .withArgs(1, 42);
     });
 
     it("should be able to heal", async function () {
       await hardhatToken
         .heal()
-        .to.emit(hardhatToken, "HealComplete")
+        .to.emit(hardhatToken, "HealStarted")
+        .and.to.emit(hardhatToken, "HealComplete")
         .withArgs(1, 1);
     });
 
