@@ -1,16 +1,20 @@
 {
   "name": "mmo-on-blockchain",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.1.0",
+  "description": "An easy examplo of a game on blockchain",
   "scripts": {
-    "test": "hardhat test",
+    "compile": "hardhat compile",
+    "test": "npm run compile && hardhat test",
     "start": "hardhat run scripts/run.js",
     "deploy": "hardhat run scripts/deploy.js --network rinkeby"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "mmo",
+    "blockchain",
+    "game"
+  ],
+  "author": "Gonzalo Soriano <sordesos@gmail.com>",
+  "license": "GNU",
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.5",
     "@nomiclabs/hardhat-waffle": "^2.0.3",
@@ -18,7 +22,8 @@
     "dotenv": "^16.0.0",
     "ethereum-waffle": "^3.4.0",
     "ethers": "^5.6.1",
-    "hardhat": "^2.9.1"
+    "hardhat": "^2.9.1",
+    "mocha": "^9.2.2"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.5.0"
