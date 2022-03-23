@@ -8,7 +8,7 @@ describe("MMO Game contract", function () {
   let addr2;
   let addrs;
 
-  async function addChampion() {
+  async function addChampionHelper() {
     await contract.addChampion("Rassellina", 100, 20, 0, [
       "idle",
       "attack",
@@ -16,6 +16,12 @@ describe("MMO Game contract", function () {
       "dying",
       "dead",
     ]);
+  }
+
+  async function addChampionToRosterHelper() {
+    await addChampionHelper();
+
+    await contract.addChampionToRoster(0);
   }
 
   beforeEach(async function () {
@@ -29,7 +35,7 @@ describe("MMO Game contract", function () {
 
   describe("Game", function () {
     it("owner should be able to add champions", async function () {
-      await addChampion();
+      await addChampionHelper();
 
       const championList = await contract.getChampionList();
       expect(championList.length).to.equal(1);
@@ -60,7 +66,7 @@ describe("MMO Game contract", function () {
     });
 
     it("should be able to add champion to his roster", async function () {
-      await addChampion();
+      await addChampionHelper();
 
       await contract.addChampionToRoster(0);
       await contract.addChampionToRoster(0);
@@ -70,7 +76,7 @@ describe("MMO Game contract", function () {
     });
 
     it("should be able to select a champion", async function () {
-      await addChampion();
+      await addChampionHelper();
 
       await contract.addChampionToRoster(0);
       await contract.addChampionToRoster(0);
@@ -83,7 +89,7 @@ describe("MMO Game contract", function () {
     });
 
     it("should emit event when adding a champion", async function () {
-      await addChampion();
+      await addChampionHelper();
 
       await expect(contract.addChampionToRoster(0))
         .to.emit(contract, "ChampionAddedToRoster")
@@ -91,7 +97,7 @@ describe("MMO Game contract", function () {
     });
 
     it("should emit event when selecting a champion", async function () {
-      await addChampion();
+      await addChampionHelper();
 
       await contract.addChampionToRoster(0);
 
@@ -103,13 +109,31 @@ describe("MMO Game contract", function () {
 
   describe("Arena", function () {
     it("should be able to accept new player", async function () {
-      //TODO: Logic to add champions to player
+      await addChampionToRosterHelper();
 
-      await contract.addChampionToArena(0);
-      await contract.addChampionToRoster(1);
+      await contract.addChampionToArena();
 
-      const arenaChampionList = await contract.getArenaChampions();
-      expect(arenaChampionList.length).to.equal(0);
+      const arenaChampionList = await contract.getArenaChampionList();
+      expect(arenaChampionList.length).to.equal(1);
+    });
+
+    it("should not allow player to join arena with dead champion", async function () {
+      await addChampionToRosterHelper();
+
+      const result = contract.addChampionToArena();
+
+      expect(result).to.be.revertedWith(
+        "Champion is dead, cannot add to arena"
+      );
+    });
+
+    it("should not allow same player to join arena with same champion", async function () {
+      await addChampionToRosterHelper();
+
+      await contract.addChampionToArena();
+      const result = contract.addChampionToArena();
+
+      expect(result).to.be.revertedWith("Champion already in arena");
     });
 
     it('should add boss if arena "starts"', async function () {
@@ -117,7 +141,7 @@ describe("MMO Game contract", function () {
       expect(boss).to.equal(0);
 
       //TODO: Logic to add champions to player, or mock it?
-      await contract.addChampionToArena(0);
+      await contract.addChampionToArena();
 
       boss = await contract.getArenaBoss();
       expect(boss).to.equal(1);
@@ -136,10 +160,21 @@ describe("MMO Game contract", function () {
       expect(boss).to.equal(arenaChampionList.length * baseBossHealth);
     });
 
-    it("should notify players arena finished", async function () {
+    it("should emit event players when arena started", async function () {
+      await contract.attack().to.emit(contract, "ArenaStarted").withArgs(1, 42);
+    });
+
+    it("should emit event players when new champion added", async function () {
       await contract
         .attack()
-        .to.emit(contract, "AttackComplete")
+        .to.emit(contract, "ArenaNewChampion")
+        .withArgs(1, 42);
+    });
+
+    it("should emit event players arena finished", async function () {
+      await contract
+        .attack()
+        .to.emit(contract, "ArenaFinished")
         .withArgs(1, 42);
     });
   });

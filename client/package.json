@@ -2,7 +2,7 @@
   "name": "mmo-on-blockchain-client",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://rassell.github.io/mmo-on-blockchain-client",
+  "homepage": "https://rassell.github.io/mmo-on-blockchain",
   "dependencies": {
     "ethers": "^5.6.1",
     "react": "^17.0.2",

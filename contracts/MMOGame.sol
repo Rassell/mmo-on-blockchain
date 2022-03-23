@@ -12,6 +12,7 @@ import "@openzeppelin/contracts/utils/Base64.sol";
 
 import "hardhat/console.sol";
 import "./Champion.sol";
+import "./Arena.sol";
 
 /*
  * @dev Contract inherits from Ownable, which enables some capabilities to limit functionality for external users (PoC).
@@ -25,6 +26,9 @@ contract MMOGame is Ownable, ERC721 {
     // The list of all champions.
     Champion[] _champions;
 
+    // The active arena
+    Arena _arena;
+
     // Mapping from the nft's tokenId => that NFTs Champion.
     mapping(uint256 => Champion) public _nftHolderChampion;
 
@@ -34,7 +38,11 @@ contract MMOGame is Ownable, ERC721 {
     // The mapping for champions to their users.
     mapping(address => uint256[]) private _userRoster;
 
-    event ChampionAddedToRoster(address userToNotify, uint256 tokenId, uint256 championIndex);
+    event ChampionAddedToRoster(
+        address userToNotify,
+        uint256 tokenId,
+        uint256 championIndex
+    );
     event ChampionSelected(address userToNotify, uint256 tokenId);
 
     constructor() ERC721("MMO on blockchain", "MMB") {
@@ -118,7 +126,10 @@ contract MMOGame is Ownable, ERC721 {
     function setSelectChampion(uint256 _rosterIndex) public {
         uint256[] memory userRoster = getUserRoster();
 
-        assert(userRoster.length != 0);
+        require(
+            userRoster.length != 0,
+            "User must have a roster to select a champion."
+        );
 
         uint256 tokenId = userRoster[_rosterIndex];
 
@@ -132,5 +143,35 @@ contract MMOGame is Ownable, ERC721 {
      */
     function getSelectedChampion() public view returns (uint256) {
         return _selectedChampion[msg.sender];
+    }
+
+    /*
+     * @dev Function to add champion to the current arena
+     * or create a new arena if there is no arena yet.
+     */
+    function addChampionToArena() public {
+        uint256 tokenId = _selectedChampion[msg.sender];
+
+        // Dead champion can't be added to arena.
+        require(
+            _nftHolderChampion[tokenId].health == 0,
+            "Champion is dead, cannot add to arena"
+        );
+
+        // Already champion in arena can't be added to arena.
+        require(
+            _arena.userToChampionId[msg.sender] == 0,
+            "Champion already in arena"
+        );
+
+        _arena.championIdList.push(tokenId);
+        _arena.userToChampionId[msg.sender] = tokenId;
+    }
+
+    /*
+     * @dev Get actual champions from the arena
+     */
+    function getArenaChampionList() public view returns (uint256[] memory) {
+        return _arena.championIdList;
     }
 }

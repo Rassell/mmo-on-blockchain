@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "description": "An easy examplo of a game on blockchain",
   "scripts": {
-    "compile": "hardhat compile",
-    "test": "npm run compile && hardhat test",
+    "build": "hardhat compile",
+    "test": "npm run build && hardhat test",
     "start": "hardhat run scripts/run.js",
     "deploy": "hardhat run scripts/deploy.js --network rinkeby"
   },
