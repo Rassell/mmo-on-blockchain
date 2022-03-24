@@ -12,6 +12,7 @@ import "@openzeppelin/contracts/utils/Base64.sol";
 
 import "hardhat/console.sol";
 import "./Champion.sol";
+import "./Boss.sol";
 import "./Arena.sol";
 
 /*
@@ -25,6 +26,9 @@ contract MMOGame is Ownable, ERC721 {
 
     // The list of all champions.
     Champion[] _champions;
+
+    // The list of all bosses.
+    Boss[] _bosses;
 
     // The active arena
     Arena _arena;
@@ -44,10 +48,16 @@ contract MMOGame is Ownable, ERC721 {
         uint256 championIndex
     );
     event ChampionSelected(address userToNotify, uint256 tokenId);
+    event ArenaStarted(uint256 bossIndex);
+    event ArenaNewChampion(uint256 tokenId);
+    event ArenaFinished();
 
     constructor() ERC721("MMO on blockchain", "MMB") {
         // start with 1 for easier work with arrays.
         _tokenIds.increment();
+
+        // Initialize the state of the arena.
+        _arena.state = ArenaState.NOT_STARTED;
     }
 
     /*
@@ -82,6 +92,32 @@ contract MMOGame is Ownable, ERC721 {
      */
     function getChampionList() public view returns (Champion[] memory) {
         return _champions;
+    }
+
+    /*
+     * @dev Function to create a new boss.
+     * @param name The name of the boss.
+     * @param name The health of the boss.
+     * @param name The attackPower of the boss.
+     * @param gifUris The uri of the gifs to display different states.
+     */
+    function addBoss(
+        string memory name,
+        uint256 health,
+        uint256 attackPower,
+        string[] memory gifUris
+    ) public onlyOwner {
+        // Create a new boss
+        Boss memory bossToAdd = createBoss(name, health, attackPower, gifUris);
+
+        _bosses.push(bossToAdd);
+    }
+
+    /*
+     * @dev Function to return list of champions.
+     */
+    function getBossList() public view returns (Boss[] memory) {
+        return _bosses;
     }
 
     /*
@@ -154,7 +190,7 @@ contract MMOGame is Ownable, ERC721 {
 
         // Dead champion can't be added to arena.
         require(
-            _nftHolderChampion[tokenId].health == 0,
+            _nftHolderChampion[tokenId].health != 0,
             "Champion is dead, cannot add to arena"
         );
 
@@ -164,8 +200,25 @@ contract MMOGame is Ownable, ERC721 {
             "Champion already in arena"
         );
 
+        // TODO: check if have passed 5 minutes since arena finished to start a new one
+
+        // Check if the arena has started
+        if (_arena.state == ArenaState.NOT_STARTED) {
+            uint256 bossIndex = _arena.bossIndex;
+            uint256 newBossIndex = bossIndex + 1;
+            if (newBossIndex > _bosses.length) {
+                newBossIndex = 0;
+            }
+
+            _arena.bossIndex = newBossIndex;
+
+            emit ArenaStarted(bossIndex);
+        }
+
         _arena.championIdList.push(tokenId);
         _arena.userToChampionId[msg.sender] = tokenId;
+
+        emit ArenaNewChampion(tokenId);
     }
 
     /*
@@ -174,4 +227,50 @@ contract MMOGame is Ownable, ERC721 {
     function getArenaChampionList() public view returns (uint256[] memory) {
         return _arena.championIdList;
     }
+
+    /*
+     * @dev Get actual boss from the arena
+     */
+    function getArenaBoss() public view returns (Boss memory) {
+        return _bosses[_arena.bossIndex];
+    }
+
+    /*
+     * @dev Attack the boss
+     */
+     function attack() public {
+        uint256 tokenId = _selectedChampion[msg.sender];
+
+        // Check if the user is the champion in the arena
+        require(
+            _arena.userToChampionId[msg.sender] == tokenId,
+            "User has not a champion in the arena"
+        );
+
+        // Check if the champion is alive
+        require(
+            _nftHolderChampion[tokenId].health != 0,
+            "Champion is dead, cannot attack"
+        );
+
+        // Check if the arena has started
+        require(
+            _arena.state == ArenaState.IN_PROGRESS,
+            "Arena has not started yet"
+        );
+
+        Champion memory champion = _nftHolderChampion[tokenId];
+
+        Boss memory boss = getArenaBoss();
+
+        // Attack the boss
+        boss.health -= champion.attackPower;
+
+        // Check if the boss is dead
+        if (boss.health <= 0) {
+            _arena.state = ArenaState.FINISHED;
+
+            emit ArenaFinished();
+        }
+     }
 }

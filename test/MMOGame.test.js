@@ -18,10 +18,21 @@ describe("MMO Game contract", function () {
     ]);
   }
 
+  async function addBossHelper(bossHealth = 100) {
+    await contract.addBoss("SuperBoss", bossHealth, 20, [
+      "idle",
+      "attack",
+      "hurt",
+      "dying",
+      "dead",
+    ]);
+  }
+
   async function addChampionToRosterHelper() {
     await addChampionHelper();
 
     await contract.addChampionToRoster(0);
+    await contract.setSelectChampion(0);
   }
 
   beforeEach(async function () {
@@ -41,10 +52,33 @@ describe("MMO Game contract", function () {
       expect(championList.length).to.equal(1);
     });
 
+    it("owner should be able to add bosses", async function () {
+      await addBossHelper();
+
+      const bossList = await contract.getBossList();
+      expect(bossList.length).to.equal(1);
+    });
+
     it("should return error if not owner try to add champions", async function () {
       const result = contract
         .connect(addr1)
         .addChampion("Rassellina", 100, 20, 0, [
+          "idle",
+          "attack",
+          "hurt",
+          "dying",
+          "dead",
+        ]);
+
+      await expect(result).to.be.revertedWith(
+        "Ownable: caller is not the owner"
+      );
+    });
+
+    it("should return error if not owner try to add bosses", async function () {
+      const result = contract
+        .connect(addr1)
+        .addBoss("Rassellina", 100, 20, [
           "idle",
           "attack",
           "hurt",
@@ -137,45 +171,37 @@ describe("MMO Game contract", function () {
     });
 
     it('should add boss if arena "starts"', async function () {
-      let boss = await contract.getArenaBoss();
-      expect(boss).to.equal(0);
+      await addBossHelper();
 
-      //TODO: Logic to add champions to player, or mock it?
-      await contract.addChampionToArena();
-
-      boss = await contract.getArenaBoss();
-      expect(boss).to.equal(1);
-    });
-
-    // TODO: shoud notify users new boss health
-    it("should add more health to the boss as more users enters the arena", async function () {
-      const baseBossHealth = 100;
-
-      //TODO: Logic to add champions to player, or mock it?
       const boss = await contract.getArenaBoss();
-      expect(boss.health).to.equal(100);
-
-      boss = await contract.getArenaBoss();
-      const arenaChampionList = await contract.getArenaChampions();
-      expect(boss).to.equal(arenaChampionList.length * baseBossHealth);
+      expect(boss).to.not.be.undefined;
+      expect(boss).to.not.be.null;
     });
 
     it("should emit event players when arena started", async function () {
-      await contract.attack().to.emit(contract, "ArenaStarted").withArgs(1, 42);
+      await addChampionToRosterHelper();
+      await addBossHelper();
+
+      await expect(contract.addChampionToArena())
+        .to.emit(contract, "ArenaStarted")
+        .withArgs(0);
     });
 
     it("should emit event players when new champion added", async function () {
-      await contract
-        .attack()
+      await addChampionToRosterHelper();
+      await addBossHelper();
+
+      await expect(contract.addChampionToArena())
         .to.emit(contract, "ArenaNewChampion")
-        .withArgs(1, 42);
+        .withArgs(1);
     });
 
     it("should emit event players arena finished", async function () {
-      await contract
-        .attack()
-        .to.emit(contract, "ArenaFinished")
-        .withArgs(1, 42);
+      await addChampionToRosterHelper();
+      await addBossHelper(1);
+      await contract.addChampionToArena();
+
+      await expect(contract.attack()).to.emit(contract, "ArenaFinished");
     });
   });
 

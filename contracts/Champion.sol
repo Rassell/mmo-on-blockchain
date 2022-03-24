@@ -1,27 +1,21 @@
 // SPDX-License-Identifier: GNU
 pragma solidity ^0.8.1;
 
-struct GifStatus {
-    string idle;
-    string attack;
-    string hurt;
-    string dying;
-    string dead;
-}
+import "./Shared.sol";
 
 struct Champion {
     string name;
-    uint8 health;
-    uint8 attackPower;
-    uint8 healthPower;
+    uint256 health;
+    uint256 attackPower;
+    uint256 healthPower;
     GifStatus gifUris;
 }
 
 function createChampion(
     string memory name,
-    uint8 health,
-    uint8 attackPower,
-    uint8 healthPower,
+    uint256 health,
+    uint256 attackPower,
+    uint256 healthPower,
     string[] memory gifUris
 ) pure returns (Champion memory) {
     Champion memory champion;
