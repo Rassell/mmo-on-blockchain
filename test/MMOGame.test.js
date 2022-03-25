@@ -44,167 +44,6 @@ describe("MMO Game contract", function () {
     await contract.deployed();
   });
 
-  describe("Game", function () {
-    it("owner should be able to add champions", async function () {
-      await addChampionHelper();
-
-      const championList = await contract.getChampionList();
-      expect(championList.length).to.equal(1);
-    });
-
-    it("owner should be able to add bosses", async function () {
-      await addBossHelper();
-
-      const bossList = await contract.getBossList();
-      expect(bossList.length).to.equal(1);
-    });
-
-    it("should return error if not owner try to add champions", async function () {
-      const result = contract
-        .connect(addr1)
-        .addChampion("Rassellina", 100, 20, 0, [
-          "idle",
-          "attack",
-          "hurt",
-          "dying",
-          "dead",
-        ]);
-
-      await expect(result).to.be.revertedWith(
-        "Ownable: caller is not the owner"
-      );
-    });
-
-    it("should return error if not owner try to add bosses", async function () {
-      const result = contract
-        .connect(addr1)
-        .addBoss("Rassellina", 100, 20, [
-          "idle",
-          "attack",
-          "hurt",
-          "dying",
-          "dead",
-        ]);
-
-      await expect(result).to.be.revertedWith(
-        "Ownable: caller is not the owner"
-      );
-    });
-  });
-
-  describe("Player", function () {
-    it("should be able to check if have any champion", async function () {
-      let hasRoster = await contract.userHasRoster();
-
-      expect(hasRoster).to.equal(false);
-    });
-
-    it("should be able to add champion to his roster", async function () {
-      await addChampionHelper();
-
-      await contract.addChampionToRoster(0);
-      await contract.addChampionToRoster(0);
-
-      const rosterList = await contract.getUserRoster();
-      expect(rosterList.length).to.equal(2);
-    });
-
-    it("should be able to select a champion", async function () {
-      await addChampionHelper();
-
-      await contract.addChampionToRoster(0);
-      await contract.addChampionToRoster(0);
-
-      await contract.setSelectChampion(0);
-
-      const selectedChampion = await contract.getSelectedChampion();
-      expect(selectedChampion).to.be.not.undefined;
-      expect(selectedChampion).to.be.not.null;
-    });
-
-    it("should emit event when adding a champion", async function () {
-      await addChampionHelper();
-
-      await expect(contract.addChampionToRoster(0))
-        .to.emit(contract, "ChampionAddedToRoster")
-        .withArgs(owner.address, 1, 0);
-    });
-
-    it("should emit event when selecting a champion", async function () {
-      await addChampionHelper();
-
-      await contract.addChampionToRoster(0);
-
-      await expect(contract.setSelectChampion(0))
-        .to.emit(contract, "ChampionSelected")
-        .withArgs(owner.address, 1);
-    });
-  });
-
-  describe("Arena", function () {
-    it("should be able to accept new player", async function () {
-      await addChampionToRosterHelper();
-
-      await contract.addChampionToArena();
-
-      const arenaChampionList = await contract.getArenaChampionList();
-      expect(arenaChampionList.length).to.equal(1);
-    });
-
-    it("should not allow player to join arena with dead champion", async function () {
-      await addChampionToRosterHelper();
-
-      const result = contract.addChampionToArena();
-
-      expect(result).to.be.revertedWith(
-        "Champion is dead, cannot add to arena"
-      );
-    });
-
-    it("should not allow same player to join arena with same champion", async function () {
-      await addChampionToRosterHelper();
-
-      await contract.addChampionToArena();
-      const result = contract.addChampionToArena();
-
-      expect(result).to.be.revertedWith("Champion already in arena");
-    });
-
-    it('should add boss if arena "starts"', async function () {
-      await addBossHelper();
-
-      const boss = await contract.getArenaBoss();
-      expect(boss).to.not.be.undefined;
-      expect(boss).to.not.be.null;
-    });
-
-    it("should emit event players when arena started", async function () {
-      await addChampionToRosterHelper();
-      await addBossHelper();
-
-      await expect(contract.addChampionToArena())
-        .to.emit(contract, "ArenaStarted")
-        .withArgs(0);
-    });
-
-    it("should emit event players when new champion added", async function () {
-      await addChampionToRosterHelper();
-      await addBossHelper();
-
-      await expect(contract.addChampionToArena())
-        .to.emit(contract, "ArenaNewChampion")
-        .withArgs(1);
-    });
-
-    it("should emit event players arena finished", async function () {
-      await addChampionToRosterHelper();
-      await addBossHelper(1);
-      await contract.addChampionToArena();
-
-      await expect(contract.attack()).to.emit(contract, "ArenaFinished");
-    });
-  });
-
   describe("Champion", function () {
     it("should be able to attack", async function () {
       //TODO: Logic to add champions to player, or mock it?
@@ -233,6 +72,14 @@ describe("MMO Game contract", function () {
         .attack()
         .to.emit(contract, "AttackComplete")
         .withArgs(0, 0);
+    });
+
+    it("should emit event players arena finished", async function () {
+      await addChampionToRosterHelper();
+      await addBossHelper(1);
+      await contract.addChampionToArena();
+
+      await expect(contract.attack()).to.emit(contract, "ArenaFinished");
     });
   });
 
