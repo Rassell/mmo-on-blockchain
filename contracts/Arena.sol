@@ -56,7 +56,7 @@ contract Arena is BossFactory, Roster {
         if (ActiveArena.state == ArenaState.NOT_STARTED) {
             uint256 bossIndex = ActiveArena.bossIndex;
             uint256 newBossIndex = bossIndex + 1;
-            if (newBossIndex > Bosses.length) {
+            if (newBossIndex > Bosses.length - 1) {
                 newBossIndex = 0;
             }
 

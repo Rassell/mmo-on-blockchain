@@ -9,7 +9,7 @@ describe("MMO Game contract", function () {
   let addrs;
 
   async function addChampionHelper() {
-    await contract.addChampion("Rassellina", 100, 20, 0, [
+    await contract.addChampion("Rassellina", 100, 20, 10, [
       "idle",
       "attack",
       "hurt",
@@ -46,32 +46,33 @@ describe("MMO Game contract", function () {
 
   describe("Champion", function () {
     it("should be able to attack", async function () {
-      //TODO: Logic to add champions to player, or mock it?
+      await addChampionToRosterHelper();
+      await addBossHelper();
+      await contract.addChampionToArena();
 
-      await contract
-        .attack()
-        .to.emit(contract, "AttackStarted")
-        .and.to.emit(contract, "AttackComplete")
-        .withArgs(1, 42);
+      await expect(contract.attack())
+        .to.emit(contract, "AttackComplete")
+        .withArgs(80);
     });
 
     it("should be able to heal", async function () {
-      await contract
-        .heal()
-        .to.emit(contract, "HealStarted")
-        .and.to.emit(contract, "HealComplete")
-        .withArgs(1, 1);
+      await addChampionToRosterHelper();
+      await addBossHelper();
+      await contract.addChampionToArena();
+
+      await expect(contract.heal())
+        .to.emit(contract, "HealComplete")
+        .withArgs(110);
     });
 
     it("should notify user if health reach 0", async function () {
       await contract.heal().to.emit(contract, "BossHealthChanged").withArgs(0);
     });
 
-    it("should not be able to do anyhitng if health is 0", async function () {
-      await contract
-        .attack()
-        .to.emit(contract, "AttackComplete")
-        .withArgs(0, 0);
+    it("should not be able to do anyhitng if no champion is in the arena", async function () {
+      await expect(contract.attack()).to.be.revertedWith(
+        "User has not a champion in the arena"
+      );
     });
 
     it("should emit event players arena finished", async function () {
@@ -84,11 +85,14 @@ describe("MMO Game contract", function () {
   });
 
   describe("Boss", function () {
-    it("should be able to attack random", async function () {
-      await contract
-        .attack()
+    it("should be able to attack the attacker", async function () {
+      await addChampionToRosterHelper();
+      await addBossHelper();
+      await contract.addChampionToArena();
+
+      await expect(contract.attack())
         .to.emit(contract, "BossAttackComplete")
-        .withArgs(1, 25);
+        .withArgs(1, 80);
     });
   });
 });

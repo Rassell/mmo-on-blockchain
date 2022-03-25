@@ -15,14 +15,14 @@ contract ChampionFactory is Ownable {
      * @param name The name of the champion.
      * @param name The health of the champion.
      * @param name The attackPower of the champion.
-     * @param name The healthPower of the champion.
+     * @param name The healPower of the champion.
      * @param gifUris The uri of the gifs to display different states.
      */
     function addChampion(
         string memory name,
         uint256 health,
         uint256 attackPower,
-        uint256 healthPower,
+        uint256 healPower,
         string[] memory gifUris
     ) public onlyOwner {
         Champion memory championToAdd;
@@ -30,7 +30,7 @@ contract ChampionFactory is Ownable {
         championToAdd.name = name;
         championToAdd.health = health;
         championToAdd.attackPower = attackPower;
-        championToAdd.healthPower = healthPower;
+        championToAdd.healPower = healPower;
 
         championToAdd.gifUris.idle = gifUris[0];
         championToAdd.gifUris.attack = gifUris[1];

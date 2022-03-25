@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 // Helper functions OpenZeppelin provides.
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/Base64.sol";
 import "hardhat/console.sol";
 
 import "./ChampionFactory.sol";
@@ -99,5 +100,44 @@ contract Roster is ERC721, ChampionFactory {
      */
     function getSelectedChampion() public view returns (uint256) {
         return SelectedChampion[msg.sender];
+    }
+
+    function tokenURI(uint256 _tokenId)
+        public
+        view
+        override
+        returns (string memory)
+    {
+        Champion memory championAttr = NftHolderChampion[_tokenId];
+
+        string memory strHp = Strings.toString(championAttr.health);
+        string memory strMaxHp = Strings.toString(200);
+        string memory strAttackDamage = Strings.toString(
+            championAttr.attackPower
+        );
+
+        string memory json = Base64.encode(
+            abi.encodePacked(
+                '{"name": "',
+                championAttr.name,
+                " -- NFT #: ",
+                Strings.toString(_tokenId),
+                '", "description": "This is an NFT that lets people play in the game Metaverse Slayer!", "image": "',
+                championAttr.gifUris.idle,
+                '", "attributes": [ { "trait_type": "Health Points", "value": ',
+                strHp,
+                ', "max_value":',
+                strMaxHp,
+                '}, { "trait_type": "Attack Damage", "value": ',
+                strAttackDamage,
+                "} ]}"
+            )
+        );
+
+        string memory output = string(
+            abi.encodePacked("data:application/json;base64,", json)
+        );
+
+        return output;
     }
 }

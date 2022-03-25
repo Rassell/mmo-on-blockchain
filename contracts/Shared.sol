@@ -5,7 +5,7 @@ struct Champion {
     string name;
     uint256 health;
     uint256 attackPower;
-    uint256 healthPower;
+    uint256 healPower;
     GifStatus gifUris;
 }
 
