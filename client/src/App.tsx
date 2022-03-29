@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 
 import SelectCharacter from "./components/SelectCharacter";
-import myEpicGame from "./assets/MyEpicGame.json";
+import mmoGame from "./assets/MMOGame.json";
 import Arena from "./components/Arena";
 import LoadingIndicator from "./components/LoadingIndicator";
 
@@ -11,7 +11,7 @@ import "./App.css";
 // Constants
 const TWITTER_HANDLE = "_buildspace";
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
-const contractAddress = "0x957A37AA4dC74a2F23f6b48D4F13fCE36121624a";
+const contractAddress = "0x62477EB1c7d1e8b6512E1D7Da266cf4175696A12";
 
 /*
  * Add this method and make sure to export it on the bottom!
@@ -62,7 +62,7 @@ const App = () => {
     } catch (error) {
       console.log(error);
     }
-    
+
     setIsLoading(false);
   };
 

@@ -65,10 +65,6 @@ describe("MMO Game contract", function () {
         .withArgs(110);
     });
 
-    it("should notify user if health reach 0", async function () {
-      await contract.heal().to.emit(contract, "BossHealthChanged").withArgs(0);
-    });
-
     it("should not be able to do anyhitng if no champion is in the arena", async function () {
       await expect(contract.attack()).to.be.revertedWith(
         "User has not a champion in the arena"

@@ -1,12 +1,6 @@
 // SPDX-License-Identifier: GNU
 pragma solidity ^0.8.1;
 
-enum ArenaState {
-    NOT_STARTED,
-    IN_PROGRESS,
-    FINISHED
-}
-
 import "./Roster.sol";
 import "./BossFactory.sol";
 
@@ -16,6 +10,12 @@ struct ArenaStruct {
     uint256 bossIndex;
     ArenaState state;
     uint256 lastArenaFinishedOn;
+}
+
+enum ArenaState {
+    NOT_STARTED,
+    IN_PROGRESS,
+    FINISHED
 }
 
 contract Arena is BossFactory, Roster {

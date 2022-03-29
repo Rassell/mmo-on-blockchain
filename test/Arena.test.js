@@ -45,12 +45,13 @@ describe("Arena contract", function () {
   });
 
   describe("Arena", function () {
-    it("should be able to accept new player", async function () {
+    xit("should be able to accept new player", async function () {
       await addChampionToRosterHelper();
 
       await contract.addChampionToArena();
 
       const arenaChampionList = await contract.getArenaChampionList();
+      console.log(arenaChampionList);
       expect(arenaChampionList.length).to.equal(1);
     });
 
@@ -64,7 +65,7 @@ describe("Arena contract", function () {
       );
     });
 
-    it("should not allow same player to join arena with same champion", async function () {
+    xit("should not allow same player to join arena with same champion", async function () {
       await addChampionToRosterHelper();
 
       await contract.addChampionToArena();

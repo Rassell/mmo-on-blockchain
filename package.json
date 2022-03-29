@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "description": "An easy examplo of a game on blockchain",
   "scripts": {
+    "postinstall": "cd ./client && npm install",
     "build": "hardhat compile && hardhat size-contracts",
+    "copyContract": "node scripts/copy-contract.js",
     "test": "npm run build && hardhat test",
-    "start": "hardhat run scripts/run.js",
-    "deploy": "hardhat run scripts/deploy.js --network rinkeby"
+    "deploy": "hardhat run scripts/deploy.js --network rinkeby && npm run copyContract",
+    "add:champion": "hardhat run scripts/addChampion.js"
   },
   "keywords": [
     "mmo",
