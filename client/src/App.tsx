@@ -1,21 +1,20 @@
-import React, {  } from "react";
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout";
 
-import SelectCharacter from "./components/SelectCharacter";
 import LoadingIndicator from "./components/LoadingIndicator";
 
-import { useArena, useRoster, useWallet } from "./hooks";
+import { useWallet } from "./hooks";
+import { Home, Roster, CharacterList, Arena } from "./pages";
 
 // Constants
 const TWITTER_HANDLE = "_buildspace";
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
 
-const App = () => {
-  const { currentAccount, connectWalletAction, loading } =
-    useWallet();
-  const { boss, goToBattle } = useArena();
-  const { roster, selectedChampionId, selectChampion } = useRoster();
+export default function App() {
+  const { currentAccount, connectWalletAction, loading } = useWallet();
 
-  const renderContent = () => {
+  const renderContent = (childrenToRender: JSX.Element) => {
     if (loading) {
       return <LoadingIndicator />;
     }
@@ -35,30 +34,8 @@ const App = () => {
           </button>
         </>
       );
-    } else if (currentAccount && roster.length > 0) {
-      return (
-        <div>
-          {roster.map((r, i) => (
-            <div>
-              <div>{r.name}</div>
-              <div>{r.health}</div>
-              <div>{r.maxHealth}</div>
-              <div>{r.attackPower}</div>
-              <div>{r.healPower}</div>
-              {i !== selectedChampionId && (
-                <button onClick={() => selectChampion(i)}>
-                  Select champion
-                </button>
-              )}
-              {i === selectedChampionId && (
-                <button onClick={goToBattle}>Go to battle!</button>
-              )}
-            </div>
-          ))}
-        </div>
-      );
     } else {
-      return <SelectCharacter />;
+      return childrenToRender;
       /*
        * If there is a connected wallet and characterNFT, it's time to battle!
        */
@@ -66,21 +43,26 @@ const App = () => {
   };
 
   return (
-    <div>
-      <div>
-        {renderContent()}
-        {boss && <div>{boss.name}</div>}
-        <div>
-          <a
-            className="footer-text"
-            href={TWITTER_LINK}
-            target="_blank"
-            rel="noreferrer"
-          >{`built with @${TWITTER_HANDLE}`}</a>
-        </div>
-      </div>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route
+            path="characterList"
+            element={renderContent(<CharacterList />)}
+          />
+          <Route path="roster" element={renderContent(<Roster />)} />
+          <Route path="arena" element={renderContent(<Arena />)} />
+          <Route
+            path="*"
+            element={
+              <main style={{ padding: "1rem" }}>
+                <p>There's nothing here!</p>
+              </main>
+            }
+          />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
-};
-
-export default App;
+}

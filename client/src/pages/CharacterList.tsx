@@ -1,32 +1,17 @@
 import React, { useEffect, useState } from "react";
 
-import { ethers } from "ethers";
-import myEpicGame from "../assets/MMOGame.json";
-import LoadingIndicator from "./LoadingIndicator";
 import { useWallet } from "../hooks/useWallet";
 import { Champion } from "../Models";
 import sword from "../assets/icons/sword.png";
 import health from "../assets/icons/health.png";
 import healPower from "../assets/icons/healPower.png";
-
-/*
- * Add this method and make sure to export it on the bottom!
- */
-const transformCharacterData = (characterData: any) => {
-  return {
-    name: characterData.name,
-    health: characterData.health.toNumber(),
-    maxHealth: characterData.maxHealth.toNumber(),
-    attackPower: characterData.attackPower.toNumber(),
-    healPower: characterData.healPower.toNumber(),
-    gifUris: characterData.gifUris,
-  };
-};
+import { transformCharacterData } from "../Common";
+import LoadingIndicator from "../components/LoadingIndicator";
 
 /*
  * Don't worry about setCharacterNFT just yet, we will talk about it soon!
  */
-const SelectCharacter = () => {
+export default function CharacterList() {
   const { contract } = useWallet();
   const [characters, setCharacters] = useState<Champion[]>([]);
   const [mintingCharacter, setMintingCharacter] = useState(false);
@@ -163,6 +148,4 @@ const SelectCharacter = () => {
       )}
     </div>
   );
-};
-
-export default SelectCharacter;
+}
