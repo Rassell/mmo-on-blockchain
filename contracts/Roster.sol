@@ -54,6 +54,17 @@ contract Roster is ERC721, ChampionFactory {
     }
 
     /*
+     * @dev Function to return the roster of the user.
+     */
+    function getNFTChampion(uint256 recordId)
+        public
+        view
+        returns (Champion memory)
+    {
+        return NftHolderChampion[recordId];
+    }
+
+    /*
      * @dev Function to add champion to the roster of the user.
      */
     function addChampionToRoster(uint256 _championIndex) public {
@@ -70,7 +81,14 @@ contract Roster is ERC721, ChampionFactory {
         _userRoster[msg.sender].push(newRecordId);
 
         // TODO: recieve this from separate contract
-        NftHolderChampion[newRecordId] = Champions[_championIndex];
+        NftHolderChampion[newRecordId] = Champion({
+            name: Champions[_championIndex].name,
+            health: Champions[_championIndex].health,
+            maxHealth: Champions[_championIndex].maxHealth,
+            attackPower: Champions[_championIndex].attackPower,
+            healPower: Champions[_championIndex].healPower,
+            gifUris: Champions[_championIndex].gifUris
+        });
 
         _tokenIds.increment();
 

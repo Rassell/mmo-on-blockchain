@@ -11,6 +11,7 @@ import "./Shared.sol";
 struct Boss {
     string name;
     uint256 health;
+    uint256 maxHealth;
     uint256 attackPower;
     GifStatus gifUris;
 }
@@ -36,6 +37,7 @@ contract BossFactory is Ownable {
 
         bossToAdd.name = name;
         bossToAdd.health = health;
+        bossToAdd.maxHealth = health;
         bossToAdd.attackPower = attackPower;
 
         bossToAdd.gifUris.idle = gifUris[0];

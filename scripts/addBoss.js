@@ -3,7 +3,7 @@ async function main() {
   const gameContract = await gameContractFactory.attach(
     "0x0eaBDC3793200d20Dc2cB023C8fe7DfDb213e44E"
   );
-  await gameContract.addChampion("Rassellina", 100, 20, 10, [
+  await gameContract.addBoss("Rassellina", 1000, 5, [
     "https://i.imgur.com/UnWkZDq.gif",
     "https://i.imgur.com/0uefgj4.gif",
     "https://i.imgur.com/gzrIxJn.gif",

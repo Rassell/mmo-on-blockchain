@@ -1,15 +1,7 @@
 import React from "react";
-import "./LoadingIndicator.css";
 
-const LoadingIndicator = () => {
+export default function LoadingIndicator () {
   return (
-    <div className="lds-ring">
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-    </div>
+    <div className="m-auto w-24 h-24 border-4 border-solid border-red-500 border-t-transparent rounded-full animate-spin" />
   );
-};
-
-export default LoadingIndicator;
+}

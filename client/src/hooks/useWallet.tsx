@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useContext, createContext } from "react";
+import { Contract, ethers } from "ethers";
 
+import mmoGame from "../assets/MMOGame.json";
+
+const contractAddress = "0x0eaBDC3793200d20Dc2cB023C8fe7DfDb213e44E";
 const walletContext = createContext({} as ReturnType<typeof useProviderWallet>);
 
 // Provider container
@@ -18,9 +22,12 @@ export const useWallet = () => {
 // Hook to provide auth methods to child components.
 function useProviderWallet() {
   const [loading, setLoading] = useState(true);
+  const [contract, setContract] = useState<Contract | null>(null);
   const [currentAccount, setCurrentAccount] = useState(null);
 
   async function checkIfWalletIsConnected() {
+    setLoading(true);
+
     try {
       const { ethereum } = window;
 
@@ -48,6 +55,8 @@ function useProviderWallet() {
   }
 
   async function connectWalletAction() {
+    setLoading(true);
+    
     try {
       const { ethereum } = window;
 
@@ -65,15 +74,34 @@ function useProviderWallet() {
     } catch (error) {
       console.log(error);
     }
+
+    setLoading(false);
+  }
+
+  async function connectContract() {
+    setLoading(true);
+
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const gameContract = new ethers.Contract(
+      contractAddress,
+      mmoGame.abi,
+      signer
+    );
+
+    setContract(gameContract);
+    setLoading(false);
   }
 
   useEffect(() => {
     checkIfWalletIsConnected();
+    connectContract();
   }, []);
 
   return {
     loading,
     currentAccount,
+    contract,
     connectWalletAction,
   };
 }

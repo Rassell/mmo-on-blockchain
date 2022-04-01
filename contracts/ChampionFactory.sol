@@ -8,7 +8,7 @@ import "./Shared.sol";
 
 contract ChampionFactory is Ownable {
     // The list of all champions.
-    Champion[] public Champions;
+    Champion[] Champions;
 
     /*
      * @dev Function to create a new champion.
@@ -20,7 +20,7 @@ contract ChampionFactory is Ownable {
      */
     function addChampion(
         string memory name,
-        uint256 health,
+        uint256 maxHealth,
         uint256 attackPower,
         uint256 healPower,
         string[] memory gifUris
@@ -28,7 +28,8 @@ contract ChampionFactory is Ownable {
         Champion memory championToAdd;
 
         championToAdd.name = name;
-        championToAdd.health = health;
+        championToAdd.health = maxHealth;
+        championToAdd.maxHealth = maxHealth;
         championToAdd.attackPower = attackPower;
         championToAdd.healPower = healPower;
 

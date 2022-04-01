@@ -1,34 +1,34 @@
 import React, { useEffect, useState } from "react";
-import { ethers } from "ethers";
 
 import SelectCharacter from "./components/SelectCharacter";
-import mmoGame from "./assets/MMOGame.json";
 import Arena from "./components/Arena";
 import LoadingIndicator from "./components/LoadingIndicator";
 
-import "./App.css";
+import { useWallet } from "./hooks/useWallet";
+import { BigNumber } from "ethers";
 
 // Constants
 const TWITTER_HANDLE = "_buildspace";
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
-const contractAddress = "0x62477EB1c7d1e8b6512E1D7Da266cf4175696A12";
 
 /*
  * Add this method and make sure to export it on the bottom!
  */
 const transformCharacterData = (characterData: any) => {
+  console.log("Character Data:", characterData);
   return {
     name: characterData.name,
-    imageURI: characterData.imageURI,
-    hp: characterData.hp.toNumber(),
-    maxHp: characterData.maxHp.toNumber(),
-    attackDamage: characterData.attackDamage.toNumber(),
+    health: characterData.health.toNumber(),
+    maxHealth: characterData.maxHealth?.toNumber(),
+    attackPower: characterData.attackPower.toNumber(),
+    healPower: characterData.healPower?.toNumber(),
+    gifUris: characterData.gifUris,
   };
 };
 
 const App = () => {
-  // State
-  const [currentAccount, setCurrentAccount] = useState(null);
+  const { currentAccount, contract, connectWalletAction, loading } =
+    useWallet();
 
   /*
    * Right under current account, setup this new state property
@@ -36,69 +36,12 @@ const App = () => {
   const [characterNFT, setCharacterNFT] = useState<ReturnType<
     typeof transformCharacterData
   > | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-
-  // Actions
-  const checkIfWalletIsConnected = async () => {
-    try {
-      const { ethereum } = window;
-
-      if (!ethereum) {
-        console.log("Make sure you have MetaMask!");
-        return;
-      } else {
-        console.log("We have the ethereum object", ethereum);
-
-        const accounts = await ethereum.request({ method: "eth_accounts" });
-
-        if (accounts.length !== 0) {
-          const account = accounts[0];
-          console.log("Found an authorized account:", account);
-          setCurrentAccount(account);
-        } else {
-          console.log("No authorized account found");
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
-
-    setIsLoading(false);
-  };
-
-  /*
-   * Implement your connectWallet method here
-   */
-  const connectWalletAction = async () => {
-    try {
-      const { ethereum } = window;
-
-      if (!ethereum) {
-        alert("Get MetaMask!");
-        return;
-      }
-
-      /*
-       * Fancy method to request access to account.
-       */
-      const accounts = await ethereum.request({
-        method: "eth_requestAccounts",
-      });
-
-      /*
-       * Boom! This should print out public address once we authorize Metamask.
-       */
-      console.log("Connected", accounts[0]);
-      setCurrentAccount(accounts[0]);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    setIsLoading(true);
-    checkIfWalletIsConnected();
-  }, []);
+  const [roster, setRoster] = useState<
+    ReturnType<typeof transformCharacterData>[]
+  >([]);
+  const [arenaBoss, setArenaBoss] =
+    useState<ReturnType<typeof transformCharacterData>>();
+  const [selected, setSelected] = useState<number | null>(null);
 
   /*
    * Add this useEffect right under the other useEffect where you are calling checkIfWalletIsConnected
@@ -108,25 +51,29 @@ const App = () => {
      * The function we will call that interacts with out smart contract
      */
     const fetchNFTMetadata = async () => {
-      console.log("Checking for Character NFT on address:", currentAccount);
+      if (!contract) return;
+      console.log("Checking for Address roster:", currentAccount);
 
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const gameContract = new ethers.Contract(
-        contractAddress,
-        myEpicGame.abi,
-        signer
-      );
-
-      const txn = await gameContract.checkIfUserHasNFT();
-      if (txn.name) {
-        console.log("User has character NFT");
-        setCharacterNFT(transformCharacterData(txn));
+      if (await contract.userHasRoster()) {
+        console.log("User has roster");
+        const userHasSelected: BigNumber = await contract.getSelectedChampion();
+        console.log("Selected Champion index:", userHasSelected.toNumber());
+        setSelected(userHasSelected.toNumber());
+        const selected = transformCharacterData(
+          await contract.getNFTChampion(userHasSelected)
+        );
+        console.log("Selected Champion data:", selected);
+        const roster = await contract.getUserRoster();
+        roster.forEach(async (champId: number) => {
+          const getNFTChampion = await contract.getNFTChampion(champId);
+          setRoster((r) => r.concat(transformCharacterData(getNFTChampion)));
+        });
+        const boss = await contract.getArenaBoss();
+        setArenaBoss(transformCharacterData(boss));
+        if (selected.name) setCharacterNFT(selected);
       } else {
-        console.log("No character NFT found");
+        console.log("No roster found");
       }
-
-      setIsLoading(false);
     };
 
     /*
@@ -136,16 +83,55 @@ const App = () => {
       console.log("CurrentAccount:", currentAccount);
       fetchNFTMetadata();
     }
-  }, [currentAccount]);
+  }, [currentAccount, contract]);
+
+  async function selectChampion(id: number) {
+    console.log("Selecting champion:", id);
+    if (contract) {
+      await contract.setSelectChampion(id);
+      const champ = transformCharacterData(await contract.getNFTChampion(id));
+      setCharacterNFT(champ);
+      console.log("Success champion selected:", champ);
+    }
+  }
+
+  async function goToBattle() {
+    console.log("Going to battle!");
+    if (contract) {
+      await contract.addChampionToArena();
+    }
+  }
+
+  useEffect(() => {
+    async function onArenaStarted() {
+      if (contract) {
+        const arenaBoss = await contract.getArenaBoss();
+        setArenaBoss(transformCharacterData(arenaBoss));
+      }
+    }
+
+    if (contract) {
+      contract.on("ArenaStarted", onArenaStarted);
+    }
+
+    return () => {
+      /*
+       * When your component unmounts, let;s make sure to clean up this listener
+       */
+      if (contract) {
+        contract.off("ArenaStarted", onArenaStarted);
+      }
+    };
+  }, [contract]);
 
   const renderContent = () => {
-    if (isLoading) {
+    if (loading) {
       return <LoadingIndicator />;
     }
 
     if (!currentAccount) {
       return (
-        <div className="connect-wallet-container">
+        <>
           <img
             src="https://64.media.tumblr.com/tumblr_mbia5vdmRd1r1mkubo1_500.gifv"
             alt="Monty Python Gif"
@@ -156,35 +142,44 @@ const App = () => {
           >
             Connect Wallet To Get Started
           </button>
+        </>
+      );
+    } else if (currentAccount && roster.length > 0) {
+      return (
+        <div>
+          {roster.map((r, i) => (
+            <div>
+              <div>{r.name}</div>
+              <div>{r.health}</div>
+              <div>{r.maxHealth}</div>
+              <div>{r.attackPower}</div>
+              <div>{r.healPower}</div>
+              {(!selected || i !== selected - 1) && (
+                <button onClick={() => selectChampion(i)}>
+                  Select champion
+                </button>
+              )}
+              {selected && i === selected - 1 && (
+                <button onClick={goToBattle}>Go to battle!</button>
+              )}
+            </div>
+          ))}
         </div>
       );
     } else if (currentAccount && !characterNFT) {
-      return <SelectCharacter setCharacterNFT={setCharacterNFT} />;
+      return <SelectCharacter />;
       /*
        * If there is a connected wallet and characterNFT, it's time to battle!
        */
-    } else if (currentAccount && characterNFT) {
-      return (
-        <Arena characterNFT={characterNFT} setCharacterNFT={setCharacterNFT} />
-      );
     }
   };
 
   return (
-    <div className="App">
-      <div className="container">
-        <div className="header-container">
-          <p className="header gradient-text">⚔️ Metaverse Slayer ⚔️</p>
-          <p className="sub-text">Team up to protect the Metaverse!</p>
-          <div className="connect-wallet-container">
-            <img
-              src="https://64.media.tumblr.com/tumblr_mbia5vdmRd1r1mkubo1_500.gifv"
-              alt="Monty Python Gif"
-            />
-            {renderContent()}
-          </div>
-        </div>
-        <div className="footer-container">
+    <div>
+      <div>
+        {renderContent()}
+        {arenaBoss && <div>{arenaBoss.name}</div>}
+        <div>
           <a
             className="footer-text"
             href={TWITTER_LINK}
