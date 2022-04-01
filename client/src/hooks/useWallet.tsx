@@ -23,7 +23,7 @@ export const useWallet = () => {
 function useProviderWallet() {
   const [loading, setLoading] = useState(true);
   const [contract, setContract] = useState<Contract | null>(null);
-  const [currentAccount, setCurrentAccount] = useState(null);
+  const [currentAccount, setCurrentAccount] = useState<string | null>(null);
 
   async function checkIfWalletIsConnected() {
     setLoading(true);

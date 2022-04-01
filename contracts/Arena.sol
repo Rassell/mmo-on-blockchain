@@ -73,7 +73,7 @@ contract Arena is BossFactory, Roster {
     }
 
     /*
-     * @dev Get actual champions from the arena
+     * @dev Get actual arena state
      */
     function getArenaChampionList() public view returns (uint256[] memory) {
         return ActiveArena.championIdList;
@@ -84,5 +84,12 @@ contract Arena is BossFactory, Roster {
      */
     function getArenaBoss() public view returns (Boss memory) {
         return Bosses[ActiveArena.bossIndex];
+    }
+
+    /*
+     * @dev Get actual state of the arena
+     */
+    function getArenaState() public view returns (ArenaState) {
+        return ActiveArena.state;
     }
 }
