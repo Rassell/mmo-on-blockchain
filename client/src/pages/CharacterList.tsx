@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
+import { useAtom } from "jotai";
 
-import { useWallet } from "../hooks/useWallet";
 import { Champion } from "../Models";
 import sword from "../assets/icons/sword.png";
 import health from "../assets/icons/health.png";
 import healPower from "../assets/icons/healPower.png";
 import { transformCharacterData } from "../Common";
 import LoadingIndicator from "../components/LoadingIndicator";
+import { ContractAtom } from "../state/wallet";
 
 /*
  * Don't worry about setCharacterNFT just yet, we will talk about it soon!
  */
 export default function CharacterList() {
-  const { contract } = useWallet();
+  const [contract] = useAtom(ContractAtom);
   const [characters, setCharacters] = useState<Champion[]>([]);
   const [mintingCharacter, setMintingCharacter] = useState(false);
 

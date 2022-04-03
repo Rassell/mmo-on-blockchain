@@ -5,6 +5,7 @@
   "homepage": "https://rassell.github.io/mmo-on-blockchain",
   "dependencies": {
     "ethers": "^5.6.1",
+    "jotai": "^1.6.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.3.0",

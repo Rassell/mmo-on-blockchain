@@ -1,14 +1,29 @@
-import React from "react";
-import { useArena, useRoster } from "../hooks";
+import React, { useEffect } from "react";
+import { useAtom } from "jotai";
+
+import {
+  initRosterAtom,
+  RosterAtom,
+  selectChampionAtom,
+  SelectedChampionIdAtom,
+} from "../state/roster";
+import { goToBattleAtom } from "../state/arena";
 
 export default function Roster() {
-  const { boss, goToBattle } = useArena();
-  const { roster, selectedChampionId, selectChampion } = useRoster();
+  const [roster] = useAtom(RosterAtom);
+  const [selectedChampionId] = useAtom(SelectedChampionIdAtom);
+  const [, goToBattle] = useAtom(goToBattleAtom);
+  const [, initRoster] = useAtom(initRosterAtom);
+  const [, selectChampion] = useAtom(selectChampionAtom);
+
+  useEffect(() => {
+    initRoster();
+  }, [initRoster]);
 
   return (
     <div>
       {roster.map((r, i) => (
-        <div>
+        <div key={`roster_i_${i}`}>
           <div>{r.name}</div>
           <div>{r.health}</div>
           <div>{r.maxHealth}</div>

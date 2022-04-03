@@ -30,7 +30,7 @@
   "resolved" "https://registry.npmjs.org/@babel/compat-data/-/compat-data-7.17.7.tgz"
   "version" "7.17.7"
 
-"@babel/core@^7.0.0", "@babel/core@^7.0.0-0", "@babel/core@^7.1.0", "@babel/core@^7.11.1", "@babel/core@^7.12.0", "@babel/core@^7.12.3", "@babel/core@^7.13.0", "@babel/core@^7.16.0", "@babel/core@^7.4.0-0", "@babel/core@^7.7.2", "@babel/core@^7.8.0", "@babel/core@>=7.11.0":
+"@babel/core@*", "@babel/core@^7.0.0", "@babel/core@^7.0.0-0", "@babel/core@^7.1.0", "@babel/core@^7.11.1", "@babel/core@^7.12.0", "@babel/core@^7.12.3", "@babel/core@^7.13.0", "@babel/core@^7.16.0", "@babel/core@^7.4.0-0", "@babel/core@^7.7.2", "@babel/core@^7.8.0", "@babel/core@>=7.11.0":
   "integrity" "sha512-djHlEfFHnSnTAcPb7dATbiM5HxGOP98+3JLBZtjRb5I7RXrw7kFRoG2dXM8cm3H+o11A8IFH/uprmJpwFynRNQ=="
   "resolved" "https://registry.npmjs.org/@babel/core/-/core-7.17.7.tgz"
   "version" "7.17.7"
@@ -1031,7 +1031,7 @@
   dependencies:
     "regenerator-runtime" "^0.13.4"
 
-"@babel/template@^7.16.7", "@babel/template@^7.3.3":
+"@babel/template@*", "@babel/template@^7.16.7", "@babel/template@^7.3.3":
   "integrity" "sha512-I8j/x8kHUrbYRTUxXrrMbfCa7jxkE7tZre39x3kjr9hvI82cK1FfqLygotcWN5kdPGWcLdWMHpSBavse5tWw3w=="
   "resolved" "https://registry.npmjs.org/@babel/template/-/template-7.16.7.tgz"
   "version" "7.16.7"
@@ -5172,7 +5172,7 @@
   "resolved" "https://registry.npmjs.org/ignore/-/ignore-5.2.0.tgz"
   "version" "5.2.0"
 
-"immer@^9.0.7":
+"immer@*", "immer@^9.0.7":
   "integrity" "sha512-lk7UNmSbAukB5B6dh9fnh5D0bJTOFKxVg2cyJWTYrWRfhLrLMBquONcUs3aFq507hNoIZEDDh8lb8UtOizSMhA=="
   "resolved" "https://registry.npmjs.org/immer/-/immer-9.0.12.tgz"
   "version" "9.0.12"
@@ -5927,6 +5927,11 @@
     "@jest/core" "^27.5.1"
     "import-local" "^3.0.2"
     "jest-cli" "^27.5.1"
+
+"jotai@^1.6.1":
+  "integrity" "sha512-iNKHmpKGN31KXDqxGLsplb4HLTroYtiM7oBEQ9leyoXSEGQGUZKK5IOV4kN6fUmkBSJbwb5WnmInYOYzpjIDOw=="
+  "resolved" "https://registry.npmjs.org/jotai/-/jotai-1.6.1.tgz"
+  "version" "1.6.1"
 
 "js-sha3@0.8.0":
   "integrity" "sha512-gF1cRrHhIzNfToc802P800N8PpXS+evLLXfsVpowqmAFR9uwbi89WvXg2QspOmXL8QL86J4T1EpFu+yUkwJY3Q=="

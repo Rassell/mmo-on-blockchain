@@ -1,25 +1,38 @@
-import React from "react";
+import { useAtom } from "jotai";
+import React, { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 
 import LoadingIndicator from "./components/LoadingIndicator";
 
-import { useWallet } from "./hooks";
 import { Home, Roster, CharacterList, Arena } from "./pages";
+import {
+  LoadingInitWeb3Atom,
+  initWeb3Atom,
+  AccountAtom,
+  connectWallet,
+} from "./state/wallet";
 
 // Constants
 const TWITTER_HANDLE = "_buildspace";
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
 
 export default function App() {
-  const { currentAccount, connectWalletAction, loading } = useWallet();
+  const [account] = useAtom(AccountAtom);
+  const [loading] = useAtom(LoadingInitWeb3Atom);
+  const [, initWeb3] = useAtom(initWeb3Atom);
+  const [, connect] = useAtom(connectWallet);
+
+  useEffect(() => {
+    initWeb3();
+  }, [initWeb3]);
 
   const renderContent = (childrenToRender: JSX.Element) => {
     if (loading) {
       return <LoadingIndicator />;
     }
 
-    if (!currentAccount) {
+    if (!account) {
       return (
         <>
           <img
@@ -28,7 +41,7 @@ export default function App() {
           />
           <button
             className="cta-button connect-wallet-button"
-            onClick={connectWalletAction}
+            onClick={connect}
           >
             Connect Wallet To Get Started
           </button>
