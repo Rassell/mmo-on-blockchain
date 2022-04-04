@@ -10,7 +10,7 @@ import {
   LoadingInitWeb3Atom,
   initWeb3Atom,
   AccountAtom,
-  connectWallet,
+  connectWalletAtom,
 } from "./state/wallet";
 
 // Constants
@@ -21,7 +21,7 @@ export default function App() {
   const [account] = useAtom(AccountAtom);
   const [loading] = useAtom(LoadingInitWeb3Atom);
   const [, initWeb3] = useAtom(initWeb3Atom);
-  const [, connect] = useAtom(connectWallet);
+  const [, connectWallet] = useAtom(connectWalletAtom);
 
   useEffect(() => {
     initWeb3();
@@ -41,7 +41,7 @@ export default function App() {
           />
           <button
             className="cta-button connect-wallet-button"
-            onClick={connect}
+            onClick={connectWallet}
           >
             Connect Wallet To Get Started
           </button>

@@ -46,7 +46,7 @@ export const initWeb3Atom = atom(null, async (get, set) => {
   }
 });
 
-export const connectWallet = atom(null, async (_, set) => {
+export const connectWalletAtom = atom(null, async (_, set) => {
   try {
     const { ethereum } = window;
 
