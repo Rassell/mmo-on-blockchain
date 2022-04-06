@@ -12,7 +12,6 @@ import { goToBattleAtom } from "../state/arena";
 export default function Roster() {
   const [roster] = useAtom(RosterAtom);
   const [selectedChampionId] = useAtom(SelectedChampionIdAtom);
-  const [, goToBattle] = useAtom(goToBattleAtom);
   const [, initRoster] = useAtom(initRosterAtom);
   const [, selectChampion] = useAtom(selectChampionAtom);
 
@@ -31,9 +30,6 @@ export default function Roster() {
           <div>{r.healPower}</div>
           {i !== selectedChampionId && (
             <button onClick={() => selectChampion(i)}>Select champion</button>
-          )}
-          {i === selectedChampionId && (
-            <button onClick={goToBattle}>Go to battle!</button>
           )}
         </div>
       ))}

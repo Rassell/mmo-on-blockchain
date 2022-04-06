@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import { atom } from "jotai";
 
 import mmoGame from "../assets/MMOGame.json";
-const contractAddress = "0x0eaBDC3793200d20Dc2cB023C8fe7DfDb213e44E";
+const contractAddress = "0xcE589730fFEd80bFEFcE26d0769DcA6C0182E79d";
 
 export const LoadingInitWeb3Atom = atom(false);
 export const AccountAtom = atom(null);
