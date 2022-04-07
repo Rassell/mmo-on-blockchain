@@ -28,8 +28,8 @@ export const initRosterAtom = atom(null, async (get, set) => {
   console.log("Roster:", roster);
 
   const championId: BigNumber = await contract.getSelectedChampion();
-  set(SelectedChampionIdAtom, championId.toNumber() - 1);
-  console.log("Selected Champion index:", championId.toNumber() - 1);
+  set(SelectedChampionIdAtom, championId.toNumber());
+  console.log("Selected Champion index:", championId.toNumber());
   
   const championDataPromises = await Promise.allSettled(
     roster.map(
