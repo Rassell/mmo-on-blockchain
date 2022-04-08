@@ -10,7 +10,7 @@ import "./Arena.sol";
  */
 contract MMOGame is Arena {
     event AttackComplete(uint256 bossHealth);
-    event HealComplete(uint256 championHealth);
+    event HealComplete(uint256 tokenId, uint256 championHealth);
     event BossAttackComplete(uint256 tokenId, uint256 championHealth);
 
     /*
@@ -19,9 +19,9 @@ contract MMOGame is Arena {
     function attack() public checks {
         uint256 tokenId = SelectedChampion[msg.sender];
 
-        Champion memory champion = NftHolderChampion[tokenId];
+        Champion storage champion = NftHolderChampion[tokenId];
 
-        Boss memory boss = getArenaBoss();
+        Boss storage boss = Bosses[ActiveArena.bossIndex];
 
         // Check if the boss is dead with next attack
         if (boss.health < champion.attackPower) {
@@ -46,11 +46,11 @@ contract MMOGame is Arena {
     function heal() public checks {
         uint256 tokenId = SelectedChampion[msg.sender];
 
-        Champion memory champion = NftHolderChampion[tokenId];
+        Champion storage champion = NftHolderChampion[tokenId];
 
         champion.health += champion.healPower;
 
-        emit HealComplete(champion.health);
+        emit HealComplete(tokenId, champion.health);
     }
 
     modifier checks() {
