@@ -126,10 +126,10 @@ contract Roster is ERC721, ChampionFactory {
         override
         returns (string memory)
     {
-        Champion memory championAttr = NftHolderChampion[_tokenId];
+        Champion storage championAttr = NftHolderChampion[_tokenId];
 
         string memory strHp = Strings.toString(championAttr.health);
-        string memory strMaxHp = Strings.toString(200);
+        string memory strMaxHp = Strings.toString(championAttr.maxHealth);
         string memory strAttackDamage = Strings.toString(
             championAttr.attackPower
         );
