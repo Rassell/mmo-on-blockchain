@@ -1,5 +1,7 @@
+import { BigNumber } from "ethers";
 import { atom } from "jotai";
 
+import { arenaBossAtom } from "./arena";
 import { ContractAtom } from "./wallet";
 
 export const loadingAttackAtom = atom<boolean>(false);
@@ -8,15 +10,33 @@ export const loadingHealAtom = atom<boolean>(false);
 export const receiverBattleAtom = atom(null, async (get, set) => {
   const contract = get(ContractAtom);
   if (contract) {
-    contract.on("AttackComplete", (bossHealth: number) => {
-      console.log("Receiver: Attack Complete!", bossHealth);
+    contract.on("AttackComplete", (bossHealth: BigNumber) => {
+      const bossHealthNumber = bossHealth.toNumber();
+      console.log("Receiver: Attack Complete!", bossHealthNumber);
+      set(arenaBossAtom, {
+        ...get(arenaBossAtom)!,
+        health: bossHealthNumber,
+      });
     });
-    contract.on("HealComplete", (championHealth: number) => {
-      console.log("Receiver: Heal Complete!", championHealth);
-    });
-    contract.on("BossAttackComplete", (tokenId: number, championHealth: number) => {
-      console.log("Receiver: Boss Attack Complete!", tokenId, championHealth);
-    });
+    contract.on(
+      "HealComplete",
+      (championTokenId: BigNumber, championHealth: BigNumber) => {
+        const championHealthNumber = championHealth.toNumber();
+        console.log("Receiver: Heal Complete!", championHealthNumber);
+      }
+    );
+    contract.on(
+      "BossAttackComplete",
+      (championTokenId: BigNumber, championHealth: BigNumber) => {
+        const championTokenIdNumber = championTokenId.toNumber();
+        const championHealthNumber = championHealth.toNumber();
+        console.log(
+          "Receiver: Boss Attack Complete!",
+          championTokenIdNumber,
+          championHealthNumber
+        );
+      }
+    );
   }
 });
 
@@ -25,7 +45,7 @@ export const attackAtom = atom(null, async (get, set) => {
   if (contract) {
     set(loadingAttackAtom, true);
     await contract.attack();
-    set(loadingAttackAtom, false);
+    set(loadingHealAtom, false);
   }
 });
 

@@ -1,6 +1,5 @@
 export function transformCharacterData(characterData: any) {
-  console.log("Formatting Character Data:", characterData);
-  return {
+  const result = {
     name: characterData.name,
     health: characterData.health?.toNumber(),
     maxHealth: characterData.maxHealth?.toNumber(),
@@ -8,6 +7,8 @@ export function transformCharacterData(characterData: any) {
     healPower: characterData.healPower?.toNumber(),
     gifUris: characterData.gifUris,
   };
+  console.log("Formatting Character Data", characterData, result);
+  return result;
 }
 
 export type MMOCharacterData = ReturnType<typeof transformCharacterData>;

@@ -62,7 +62,7 @@ describe("MMO Game contract", function () {
 
       await expect(contract.heal())
         .to.emit(contract, "HealComplete")
-        .withArgs(110);
+        .withArgs(1, 110);
     });
 
     it("should not be able to do anyhitng if no champion is in the arena", async function () {

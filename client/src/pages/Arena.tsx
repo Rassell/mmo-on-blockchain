@@ -19,8 +19,6 @@ export default function Arena() {
   const [arenaBoss] = useAtom(arenaBossAtom);
   const [selectedChampionId] = useAtom(SelectedChampionIdAtom);
 
-  console.log(selectedChampionId);
-
   useEffect(() => {
     getArena();
   }, [getArena]);

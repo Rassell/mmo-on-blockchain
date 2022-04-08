@@ -1,13 +1,13 @@
 import { useAtom } from "jotai";
 import React, { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import Layout from "./components/Layout";
-
 import LoadingIndicator from "./components/LoadingIndicator";
-
 import { Home, Roster, CharacterList, Arena } from "./pages";
 import { receiverArenaStateAtom } from "./state/arena";
 import { receiverBattleAtom } from "./state/battle";
+import { receiverChampionAddedAtom } from "./state/characterList";
 import {
   LoadingInitWeb3Atom,
   initWeb3Atom,
@@ -22,20 +22,22 @@ const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
 export default function App() {
   const [account] = useAtom(AccountAtom);
   const [loading] = useAtom(LoadingInitWeb3Atom);
-  const [, receiverArenaState] = useAtom(receiverArenaStateAtom);
-  const [, receiverBattle] = useAtom(receiverBattleAtom);
   const [, initWeb3] = useAtom(initWeb3Atom);
   const [, connectWallet] = useAtom(connectWalletAtom);
+  const [, receiverArenaState] = useAtom(receiverArenaStateAtom);
+  const [, receiverBattle] = useAtom(receiverBattleAtom);
+  const [, receiverChampionAdded] = useAtom(receiverChampionAddedAtom);
 
   useEffect(() => {
     async function init() {
       await initWeb3();
       await receiverArenaState();
       await receiverBattle();
+      await receiverChampionAdded();
     }
 
     init();
-  }, [initWeb3, receiverArenaState, receiverBattle]);
+  }, [initWeb3, receiverArenaState, receiverBattle, receiverChampionAdded]);
 
   const renderContent = (childrenToRender: JSX.Element) => {
     if (loading) {

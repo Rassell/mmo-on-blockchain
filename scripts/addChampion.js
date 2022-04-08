@@ -1,7 +1,7 @@
 async function main() {
   const gameContractFactory = await hre.ethers.getContractFactory("MMOGame");
   const gameContract = await gameContractFactory.attach(
-    "0xcE589730fFEd80bFEFcE26d0769DcA6C0182E79d"
+    "0x185e547C110d7fd6d3dC37CB979338F1692F17Ee"
   );
   await gameContract.addChampion("Rassellina", 100, 20, 10, [
     "https://i.imgur.com/UnWkZDq.gif",
