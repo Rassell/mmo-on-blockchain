@@ -7,6 +7,7 @@ import {
   selectChampionAtom,
   SelectedChampionIdAtom,
 } from "../state/roster";
+import RenderChampion from "../components/CharacterDisplay";
 
 export default function Roster() {
   const [roster] = useAtom(RosterAtom);
@@ -20,17 +21,18 @@ export default function Roster() {
 
   return (
     <div>
-      {roster.map((r, i) => (
-        <div key={`roster_i_${i}`}>
-          <div>{r.name}</div>
-          <div>{r.health}</div>
-          <div>{r.maxHealth}</div>
-          <div>{r.attackPower}</div>
-          <div>{r.healPower}</div>
-          {r.rosterId !== selectedChampionId && (
-            <button onClick={() => selectChampion(r.rosterId)}>Select champion</button>
-          )}
-        </div>
+      {roster.map((character, index) => (
+        <RenderChampion
+          key={`roster_${character.name}_${index}`}
+          champion={character}
+          bottom={
+            character.rosterId !== selectedChampionId && (
+              <button onClick={() => selectChampion(character.rosterId)}>
+                Select champion
+              </button>
+            )
+          }
+        />
       ))}
     </div>
   );
