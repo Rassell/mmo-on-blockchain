@@ -7,7 +7,6 @@ import LoadingIndicator from "./components/LoadingIndicator";
 import { Home, Roster, CharacterList, Arena } from "./pages";
 import { receiverArenaStateAtom } from "./state/arena";
 import { receiverBattleAtom } from "./state/battle";
-import { receiverChampionAddedAtom } from "./state/characterList";
 import {
   LoadingInitWeb3Atom,
   initWeb3Atom,
@@ -16,7 +15,7 @@ import {
 } from "./state/wallet";
 
 // Constants
-const TWITTER_HANDLE = "_buildspace";
+const TWITTER_HANDLE = "aresgonza";
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
 
 export default function App() {
@@ -26,18 +25,16 @@ export default function App() {
   const [, connectWallet] = useAtom(connectWalletAtom);
   const [, receiverArenaState] = useAtom(receiverArenaStateAtom);
   const [, receiverBattle] = useAtom(receiverBattleAtom);
-  const [, receiverChampionAdded] = useAtom(receiverChampionAddedAtom);
 
   useEffect(() => {
     async function init() {
       await initWeb3();
       await receiverArenaState();
       await receiverBattle();
-      await receiverChampionAdded();
     }
 
     init();
-  }, [initWeb3, receiverArenaState, receiverBattle, receiverChampionAdded]);
+  }, [initWeb3, receiverArenaState, receiverBattle]);
 
   const renderContent = (childrenToRender: JSX.Element) => {
     if (loading) {
