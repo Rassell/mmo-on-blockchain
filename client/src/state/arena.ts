@@ -1,9 +1,10 @@
 import { atom } from "jotai";
-import { MMOCharacterData, transformCharacterData } from "../Common";
 
+import { MMOCharacterData, transformCharacterData } from "../Common";
+import { ArenaState } from "../Models";
 import { ContractAtom } from "./wallet";
 
-export const arenaStateAtom = atom(0);
+export const arenaStateAtom = atom<ArenaState>(0);
 export const arenaBossAtom = atom<MMOCharacterData | null>(null);
 export const arenaChampionIdList = atom<number[]>([]);
 

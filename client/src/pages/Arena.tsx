@@ -1,6 +1,7 @@
 import { useAtom } from "jotai";
 import React, { useEffect } from "react";
 
+import { ArenaState } from "../Models";
 import {
   arenaBossAtom,
   arenaStateAtom,
@@ -26,7 +27,7 @@ export default function Arena() {
   return (
     <div>
       <h1>Arena</h1>
-      <h2>State {arenaState}</h2>
+      <h2>State {ArenaState[arenaState]}</h2>
       {selectedChampionId > 0 && (
         <h2>Selected champion {selectedChampionId}</h2>
       )}

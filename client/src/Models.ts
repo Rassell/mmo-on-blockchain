@@ -14,3 +14,9 @@ export type GifStatus = {
   dying: string;
   dead: string;
 };
+
+export enum ArenaState {
+  NotStarted = 0,
+  InProgress = 1,
+  Finished = 2,
+}
