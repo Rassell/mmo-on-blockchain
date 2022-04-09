@@ -3,15 +3,16 @@ import { transformCharacterData } from "../Common";
 
 import { Champion } from "../Models";
 import { RosterAtom } from "./roster";
-import { ContractAtom } from "./wallet";
+import { ContractAtom, ChampionFactoryContractAtom, AccountAtom } from "./wallet";
 
 export const characterListAtom = atom<Champion[]>([]);
 export const mintingCharacterAtom = atom<boolean>(false);
 
 export const receiverChampionAddedAtom = atom(null, async (get, set) => {
-  const contract = get(ContractAtom);
-  if (contract) {
-    contract.on(
+  const account = get(AccountAtom);
+  const mmoContract = get(ContractAtom);
+  if (mmoContract && account) {
+    mmoContract.on(
       "ChampionAddedToRoster",
       async (sender: string, newRecordId, championIndex) => {
         console.log(
@@ -20,7 +21,7 @@ export const receiverChampionAddedAtom = atom(null, async (get, set) => {
           newRecordId,
           championIndex
         );
-        if (sender !== contract.address) return;
+        if (sender !== account) return;
         const characterList = get(characterListAtom);
         set(RosterAtom, [...get(RosterAtom), characterList[championIndex]]);
       }
@@ -29,7 +30,7 @@ export const receiverChampionAddedAtom = atom(null, async (get, set) => {
 });
 
 export const mintCharacterNFTAtom = atom(null, async (get, set, update) => {
-  const contract = get(ContractAtom);
+  const contract = get(ChampionFactoryContractAtom);
   try {
     set(mintingCharacterAtom, true);
     if (contract) {
@@ -46,7 +47,7 @@ export const mintCharacterNFTAtom = atom(null, async (get, set, update) => {
 });
 
 export const getCharacterListAtom = atom(null, async (get, set) => {
-  const contract = get(ContractAtom);
+  const contract = get(ChampionFactoryContractAtom);
   if (!contract) return;
 
   try {

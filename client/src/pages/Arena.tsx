@@ -36,9 +36,13 @@ export default function Arena() {
           <div>{arenaBoss.health}</div>
         </div>
       )}
-      {arenaState === 0 && <button onClick={goToBattle}>Go to battle!</button>}
-      {arenaState === 1 && selectedChampionId > 0 && (
-        <button onClick={attack}>Attack</button>
+      {selectedChampionId > 0 && (
+        <>
+          {arenaState === 0 && (
+            <button onClick={goToBattle}>Go to battle!</button>
+          )}
+          {arenaState === 1 && <button onClick={attack}>Attack</button>}
+        </>
       )}
     </div>
   );

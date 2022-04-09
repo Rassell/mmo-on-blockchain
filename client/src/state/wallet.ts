@@ -1,12 +1,15 @@
 import { ethers } from "ethers";
 import { atom } from "jotai";
 
-import mmoGame from "../assets/MMOGame.json";
-const contractAddress = "0x185e547C110d7fd6d3dC37CB979338F1692F17Ee";
+import { mmoGame, championFactory } from "../assets";
+const contractAddress = "0x0557AeEC7C90771057C717067B10d7E3bF6Dc01e";
+const championContractAddress = "0x885cbD739bf5A87CEb7eCF3dfa7193c4628974a6";
 
 export const LoadingInitWeb3Atom = atom(false);
-export const AccountAtom = atom(null);
+export const AccountAtom = atom<string | null>(null);
 export const ContractAtom = atom<ethers.Contract | null>(null);
+export const ChampionFactoryContractAtom =
+  atom<ethers.Contract | null>(null);
 
 export const initWeb3Atom = atom(null, async (get, set) => {
   if (get(AccountAtom) !== null) return;
@@ -22,7 +25,6 @@ export const initWeb3Atom = atom(null, async (get, set) => {
     console.log("We have the ethereum object", ethereum);
 
     const accounts = await ethereum.request({ method: "eth_accounts" });
-
     if (accounts.length !== 0) {
       const account = accounts[0];
       console.log("Found an authorized account:", account);
@@ -38,8 +40,14 @@ export const initWeb3Atom = atom(null, async (get, set) => {
       mmoGame.abi,
       signer
     );
+    const championFactoryContract = new ethers.Contract(
+      championContractAddress,
+      championFactory.abi,
+      signer
+    );
 
     set(ContractAtom, gameContract);
+    set(ChampionFactoryContractAtom, championFactoryContract);
     set(LoadingInitWeb3Atom, false);
   } catch (error) {
     console.log(error);
