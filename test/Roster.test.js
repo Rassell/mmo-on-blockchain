@@ -1,7 +1,9 @@
 const { expect } = require("chai");
 
 describe("Roster contract", function () {
-  let Token;
+  let RosterContractFactory;
+  let ChampionFactoryContractFactory;
+  let championFactoryContract;
   let contract;
   let owner;
   let addr1;
@@ -9,7 +11,7 @@ describe("Roster contract", function () {
   let addrs;
 
   async function addChampionHelper() {
-    await contract.addChampion("Rassellina", 100, 20, 0, [
+    await championFactoryContract.addChampion("Rassellina", 100, 20, 0, [
       "idle",
       "attack",
       "hurt",
@@ -19,12 +21,18 @@ describe("Roster contract", function () {
   }
 
   beforeEach(async function () {
-    Token = await ethers.getContractFactory("Roster");
+    RosterContractFactory = await ethers.getContractFactory("Roster");
+    ChampionFactoryContractFactory = await ethers.getContractFactory(
+      "ChampionFactory"
+    );
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
 
-    contract = await Token.deploy();
+    contract = await RosterContractFactory.deploy();
+    championFactoryContract = await ChampionFactoryContractFactory.deploy();
 
     await contract.deployed();
+    await championFactoryContract.deployed();
+    await contract.setChampionFactory(championFactoryContract.address);
   });
 
   describe("Player", function () {

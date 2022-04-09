@@ -18,13 +18,22 @@ enum ArenaState {
     FINISHED
 }
 
-contract Arena is BossFactory, Roster {
+contract Arena is Roster {
+    BossFactory public _bossFactory;
+
     // The active arena
     ArenaStruct public ActiveArena;
 
     event ArenaStarted(uint256 bossIndex);
     event ArenaNewChampion(uint256 tokenId);
     event ArenaFinished();
+
+    /*
+     * @dev Function to set Champion Factory
+     */
+    function setBossFactory(address bossFactoryAddress) public onlyOwner {
+        _bossFactory = BossFactory(bossFactoryAddress);
+    }
 
     constructor() {
         // Initialize the state of the arena.
@@ -54,9 +63,10 @@ contract Arena is BossFactory, Roster {
 
         // Check if the arena has started
         if (ActiveArena.state == ArenaState.NOT_STARTED) {
+            Boss[] memory bossList = _bossFactory.getBossList();
             uint256 bossIndex = ActiveArena.bossIndex;
             uint256 newBossIndex = bossIndex + 1;
-            if (newBossIndex > Bosses.length - 1) {
+            if (newBossIndex > bossList.length - 1) {
                 newBossIndex = 0;
             }
 
@@ -83,7 +93,7 @@ contract Arena is BossFactory, Roster {
      * @dev Get actual boss from the arena
      */
     function getArenaBoss() public view returns (Boss memory) {
-        return Bosses[ActiveArena.bossIndex];
+        return _bossFactory.getBossList()[ActiveArena.bossIndex];
     }
 
     /*

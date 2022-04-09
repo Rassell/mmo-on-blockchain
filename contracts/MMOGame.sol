@@ -20,8 +20,8 @@ contract MMOGame is Arena {
         uint256 tokenId = SelectedChampion[msg.sender];
 
         Champion storage champion = NftHolderChampion[tokenId];
-
-        Boss storage boss = Bosses[ActiveArena.bossIndex];
+        Boss[] memory bossList = _bossFactory.getBossList();
+        Boss memory boss = bossList[ActiveArena.bossIndex];
 
         // Check if the boss is dead with next attack
         if (boss.health < champion.attackPower) {

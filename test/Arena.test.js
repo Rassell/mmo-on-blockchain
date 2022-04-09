@@ -1,7 +1,11 @@
 const { expect } = require("chai");
 
 describe("Arena contract", function () {
-  let Token;
+  let ArenaContractFactory;
+  let ChampionFactoryContractFactory;
+  let BossFactoryContractFactory;
+  let championFactoryContract;
+  let bossFactoryContract;
   let contract;
   let owner;
   let addr1;
@@ -9,7 +13,7 @@ describe("Arena contract", function () {
   let addrs;
 
   async function addChampionHelper() {
-    await contract.addChampion("Rassellina", 100, 20, 0, [
+    await championFactoryContract.addChampion("Rassellina", 100, 20, 0, [
       "idle",
       "attack",
       "hurt",
@@ -19,7 +23,7 @@ describe("Arena contract", function () {
   }
 
   async function addBossHelper(bossHealth = 100) {
-    await contract.addBoss("SuperBoss", bossHealth, 20, [
+    await bossFactoryContract.addBoss("SuperBoss", bossHealth, 20, [
       "idle",
       "attack",
       "hurt",
@@ -36,12 +40,22 @@ describe("Arena contract", function () {
   }
 
   beforeEach(async function () {
-    Token = await ethers.getContractFactory("Arena");
+    ArenaContractFactory = await ethers.getContractFactory("Arena");
+    ChampionFactoryContractFactory = await ethers.getContractFactory(
+      "ChampionFactory"
+    );
+    BossFactoryContractFactory = await ethers.getContractFactory("BossFactory");
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
 
-    contract = await Token.deploy();
+    contract = await ArenaContractFactory.deploy();
+    championFactoryContract = await ChampionFactoryContractFactory.deploy();
+    bossFactoryContract = await BossFactoryContractFactory.deploy();
 
     await contract.deployed();
+    await championFactoryContract.deployed();
+    await bossFactoryContract.deployed();
+    await contract.setChampionFactory(championFactoryContract.address);
+    await contract.setBossFactory(bossFactoryContract.address);
   });
 
   describe("Arena", function () {

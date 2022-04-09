@@ -3,6 +3,7 @@ pragma solidity ^0.8.1;
 
 // NFT contract to inherit from.
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 // Helper functions OpenZeppelin provides.
 import "@openzeppelin/contracts/utils/Counters.sol";
@@ -12,9 +13,11 @@ import "hardhat/console.sol";
 import "./ChampionFactory.sol";
 import "./Shared.sol";
 
-contract Roster is ERC721, ChampionFactory {
+contract Roster is ERC721, Ownable {
     // Magic given to us by OpenZeppelin to help us keep track of tokenIds.
     using Counters for Counters.Counter;
+
+    ChampionFactory private _championFactory;
     Counters.Counter private _tokenIds;
 
     // The mapping for champions to their users.
@@ -33,6 +36,13 @@ contract Roster is ERC721, ChampionFactory {
     );
 
     event ChampionSelected(address userToNotify, uint256 tokenId);
+
+    /*
+     * @dev Function to set Champion Factory
+     */
+    function setChampionFactory(address championFactoryAddress) public onlyOwner {
+        _championFactory = ChampionFactory(championFactoryAddress);
+    }
 
     constructor() ERC721("MMO on blockchain", "MMB") {
         // start with 1 for easier work with arrays.
@@ -80,14 +90,16 @@ contract Roster is ERC721, ChampionFactory {
 
         _userRoster[msg.sender].push(newRecordId);
 
+        Champion[] memory champions = _championFactory.getChampionList();
+
         // TODO: recieve this from separate contract
         NftHolderChampion[newRecordId] = Champion({
-            name: Champions[_championIndex].name,
-            health: Champions[_championIndex].health,
-            maxHealth: Champions[_championIndex].maxHealth,
-            attackPower: Champions[_championIndex].attackPower,
-            healPower: Champions[_championIndex].healPower,
-            gifUris: Champions[_championIndex].gifUris
+            name: champions[_championIndex].name,
+            health: champions[_championIndex].health,
+            maxHealth: champions[_championIndex].maxHealth,
+            attackPower: champions[_championIndex].attackPower,
+            healPower: champions[_championIndex].healPower,
+            gifUris: champions[_championIndex].gifUris
         });
 
         _tokenIds.increment();
