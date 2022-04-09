@@ -1,5 +1,6 @@
 export function transformCharacterData(characterData: any) {
   const result = {
+    rosterId: characterData.rosterId,
     name: characterData.name,
     health: characterData.health?.toNumber(),
     maxHealth: characterData.maxHealth?.toNumber(),

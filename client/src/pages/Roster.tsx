@@ -27,10 +27,8 @@ export default function Roster() {
           <div>{r.maxHealth}</div>
           <div>{r.attackPower}</div>
           <div>{r.healPower}</div>
-          {i + 1 !== selectedChampionId && (
-            <button onClick={() => selectChampion(i + 1)}>
-              Select champion
-            </button>
+          {r.rosterId !== selectedChampionId && (
+            <button onClick={() => selectChampion(r.rosterId)}>Select champion</button>
           )}
         </div>
       ))}

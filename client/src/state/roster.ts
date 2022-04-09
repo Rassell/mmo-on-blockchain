@@ -7,17 +7,25 @@ import { AccountAtom, ContractAtom } from "./wallet";
 export const RosterAtom = atom<MMOCharacterData[]>([]);
 export const SelectedChampionIdAtom = atom<number>(-1);
 
-export const selectChampionAtom = atom(null, async (get, set, index: number) => {
-  console.log("Selecting champion:", index);
-  const contract = get(ContractAtom);
-  const currentAccount = get(AccountAtom);
-  if (!contract || !currentAccount) return;
+export const selectChampionAtom = atom(
+  null,
+  async (get, set, rosterId: number) => {
+    console.log("Selecting champion:", rosterId);
+    const contract = get(ContractAtom);
+    const currentAccount = get(AccountAtom);
+    if (!contract || !currentAccount) return;
 
-  const roster = get(RosterAtom);
+    const txn = await contract.setSelectChampion(rosterId, {
+      gasLimit: 300000,
+    });
 
-  await contract.setSelectChampion(index);
-  console.log("Success champion selected:", roster[index]);
-});
+    console.log("Mining...", txn.hash);
+    await txn.wait();
+    console.log("Mined -- ", txn.hash);
+
+    console.log("Success champion selected:", rosterId);
+  }
+);
 
 export const initRosterAtom = atom(null, async (get, set) => {
   const contract = get(ContractAtom);
@@ -29,12 +37,13 @@ export const initRosterAtom = atom(null, async (get, set) => {
 
   const championId: BigNumber = await contract.getSelectedChampion();
   set(SelectedChampionIdAtom, championId.toNumber());
-  console.log("Selected Champion index:", championId.toNumber());
-  
+  console.log("Selected Champion id:", championId.toNumber());
+
   const championDataPromises = await Promise.allSettled(
-    roster.map(
-      async (rosterId: BigNumber) => await contract.getNFTChampion(rosterId)
-    )
+    roster.map(async (rosterId: BigNumber) => ({
+      ...(await contract.getNFTChampion(rosterId)),
+      rosterId: rosterId.toNumber(),
+    }))
   );
   set(
     RosterAtom,
