@@ -29,14 +29,6 @@ contract Roster is ERC721, Ownable {
     // Mapping from the nft's tokenId => that NFTs Champion.
     mapping(uint256 => Champion) public NftHolderChampion;
 
-    event ChampionAddedToRoster(
-        address userToNotify,
-        uint256 tokenId,
-        uint256 championIndex
-    );
-
-    event ChampionSelected(address userToNotify, uint256 tokenId);
-
     /*
      * @dev Function to set Champion Factory
      */
@@ -103,8 +95,6 @@ contract Roster is ERC721, Ownable {
         });
 
         _tokenIds.increment();
-
-        emit ChampionAddedToRoster(msg.sender, newRecordId, _championIndex);
     }
 
     /*
@@ -121,8 +111,6 @@ contract Roster is ERC721, Ownable {
         uint256 tokenId = userRoster[_rosterIndex];
 
         SelectedChampion[msg.sender] = tokenId;
-
-        emit ChampionSelected(msg.sender, tokenId);
     }
 
     /*

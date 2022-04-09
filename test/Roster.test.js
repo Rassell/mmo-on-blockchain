@@ -64,23 +64,5 @@ describe("Roster contract", function () {
       expect(selectedChampion).to.be.not.undefined;
       expect(selectedChampion).to.be.not.null;
     });
-
-    it("should emit event when adding a champion", async function () {
-      await addChampionHelper();
-
-      await expect(contract.addChampionToRoster(0))
-        .to.emit(contract, "ChampionAddedToRoster")
-        .withArgs(owner.address, 1, 0);
-    });
-
-    it("should emit event when selecting a champion", async function () {
-      await addChampionHelper();
-
-      await contract.addChampionToRoster(0);
-
-      await expect(contract.setSelectChampion(0))
-        .to.emit(contract, "ChampionSelected")
-        .withArgs(owner.address, 1);
-    });
   });
 });

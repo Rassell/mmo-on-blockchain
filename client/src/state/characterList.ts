@@ -2,42 +2,21 @@ import { atom } from "jotai";
 import { transformCharacterData } from "../Common";
 
 import { Champion } from "../Models";
-import { RosterAtom } from "./roster";
-import { ContractAtom, ChampionFactoryContractAtom, AccountAtom } from "./wallet";
+import { ContractAtom, ChampionFactoryContractAtom } from "./wallet";
 
 export const characterListAtom = atom<Champion[]>([]);
 export const mintingCharacterAtom = atom<boolean>(false);
 
-export const receiverChampionAddedAtom = atom(null, async (get, set) => {
-  const account = get(AccountAtom);
-  const mmoContract = get(ContractAtom);
-  if (mmoContract && account) {
-    mmoContract.on(
-      "ChampionAddedToRoster",
-      async (sender: string, newRecordId, championIndex) => {
-        console.log(
-          "ChampionAddedToRoster",
-          sender,
-          newRecordId,
-          championIndex
-        );
-        if (sender !== account) return;
-        const characterList = get(characterListAtom);
-        set(RosterAtom, [...get(RosterAtom), characterList[championIndex]]);
-      }
-    );
-  }
-});
-
 export const mintCharacterNFTAtom = atom(null, async (get, set, update) => {
-  const contract = get(ChampionFactoryContractAtom);
+  const contract = get(ContractAtom);
   try {
     set(mintingCharacterAtom, true);
     if (contract) {
       console.log("Minting character in progress...");
-      const mintTxn = await contract.addChampionToRoster(update);
-      await mintTxn.wait();
-      console.log("mintTxn:", mintTxn);
+      const txn = await contract.addChampionToRoster(update);
+      console.log("Mining...", txn.hash);
+      await txn.wait();
+      console.log("Mined -- ", txn.hash);
     }
   } catch (error) {
     console.warn("MintCharacterAction Error:", error);
