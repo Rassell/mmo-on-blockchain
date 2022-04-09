@@ -36,19 +36,16 @@ describe("Roster contract", function () {
   });
 
   describe("Player", function () {
-    it("should be able to check if have any champion", async function () {
-      let hasRoster = await contract.userHasRoster();
-
-      expect(hasRoster).to.equal(false);
-    });
-
     it("should be able to add champion to his roster", async function () {
+      let rosterList = await contract.getUserRoster();
+      expect(rosterList.length).to.equal(0);
+
       await addChampionHelper();
 
       await contract.addChampionToRoster(0);
       await contract.addChampionToRoster(0);
 
-      const rosterList = await contract.getUserRoster();
+      rosterList = await contract.getUserRoster();
       expect(rosterList.length).to.equal(2);
     });
 

@@ -42,13 +42,6 @@ contract Roster is ERC721, Ownable {
     }
 
     /*
-     * @dev Function to check if the user have any champion.
-     */
-    function userHasRoster() public view returns (bool) {
-        return _userRoster[msg.sender].length != 0;
-    }
-
-    /*
      * @dev Function to return the roster of the user.
      */
     function getUserRoster() public view returns (uint256[] memory) {
