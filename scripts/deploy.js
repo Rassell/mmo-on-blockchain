@@ -1,10 +1,13 @@
 async function main() {
   // const championFactoryContractAddress = await deployChampionFactoryContract();
   // const bossFactoryContractAddress = await deployBossFactoryContract();
+  const rosterContractAddress = await deployRosterContract(
+    "0x885cbD739bf5A87CEb7eCF3dfa7193c4628974a6"
+  );
 
   await deployMMOContract(
-    "0x885cbD739bf5A87CEb7eCF3dfa7193c4628974a6",
-    "0x9af180C5FC03Fd9c0a1F0Bec34111cF498c71c7c"
+    "0x9af180C5FC03Fd9c0a1F0Bec34111cF498c71c7c",
+    rosterContractAddress
   );
 }
 
@@ -32,9 +35,20 @@ async function deployBossFactoryContract() {
   return BossFactoryContract.address;
 }
 
+async function deployRosterContract(championFactoryContractAddress) {
+  const RosterContractFactory = await ethers.getContractFactory("Roster");
+  console.log("Roster initialized");
+  const RosterContract = await RosterContractFactory.deploy();
+  console.log("Deploying Roster contract");
+  await RosterContract.deployed();
+  console.log("Contract deployed to:", RosterContract.address);
+  await RosterContract.setChampionFactory(championFactoryContractAddress);
+  return RosterContract.address;
+}
+
 async function deployMMOContract(
-  championFactoryContractAddress,
-  bossFactoryContractAddress
+  bossFactoryContractAddress,
+  rosterFactoryContractAddress
 ) {
   const gameContractFactory = await ethers.getContractFactory("MMOGame");
   console.log("MMO Factory initialized");
@@ -42,8 +56,8 @@ async function deployMMOContract(
   console.log("Deploying MMO contract");
   await gameContract.deployed();
   console.log("Contract deployed to:", gameContract.address);
-  await gameContract.setChampionFactory(championFactoryContractAddress);
   await gameContract.setBossFactory(bossFactoryContractAddress);
+  await gameContract.setRoster(rosterFactoryContractAddress);
   console.log("Contracts set");
 }
 

@@ -4,8 +4,10 @@ describe("Arena contract", function () {
   let ArenaContractFactory;
   let ChampionFactoryContractFactory;
   let BossFactoryContractFactory;
+  let RosterContractFactory;
   let championFactoryContract;
   let bossFactoryContract;
+  let rosterContract;
   let contract;
   let owner;
   let addr1;
@@ -34,9 +36,8 @@ describe("Arena contract", function () {
 
   async function addChampionToRosterHelper() {
     await addChampionHelper();
-
-    await contract.addChampionToRoster(0);
-    await contract.setSelectChampion(0);
+    await rosterContract.addChampionToRoster(0);
+    await rosterContract.setSelectChampion(0);
   }
 
   beforeEach(async function () {
@@ -45,16 +46,20 @@ describe("Arena contract", function () {
       "ChampionFactory"
     );
     BossFactoryContractFactory = await ethers.getContractFactory("BossFactory");
+    RosterContractFactory = await ethers.getContractFactory("Roster");
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
 
     contract = await ArenaContractFactory.deploy();
     championFactoryContract = await ChampionFactoryContractFactory.deploy();
     bossFactoryContract = await BossFactoryContractFactory.deploy();
+    rosterContract = await RosterContractFactory.deploy();
 
     await contract.deployed();
     await championFactoryContract.deployed();
     await bossFactoryContract.deployed();
-    await contract.setChampionFactory(championFactoryContract.address);
+    await rosterContract.deployed();
+    await rosterContract.setChampionFactory(championFactoryContract.address);
+    await contract.setRoster(rosterContract.address);
     await contract.setBossFactory(bossFactoryContract.address);
   });
 
@@ -91,9 +96,9 @@ describe("Arena contract", function () {
     it('should add boss if arena "starts"', async function () {
       await addBossHelper();
 
-      const boss = await contract.getArenaBoss();
-      expect(boss).to.not.be.undefined;
-      expect(boss).to.not.be.null;
+      const arena = await contract.getArena();
+      expect(arena[0]).to.not.be.undefined;
+      expect(arena[0]).to.not.be.null;
     });
 
     it("should emit event players when arena started", async function () {

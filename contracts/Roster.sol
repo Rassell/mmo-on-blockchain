@@ -77,7 +77,6 @@ contract Roster is ERC721, Ownable {
 
         Champion[] memory champions = _championFactory.getChampionList();
 
-        // TODO: recieve this from separate contract
         NftHolderChampion[newRecordId] = Champion({
             name: champions[_championIndex].name,
             health: champions[_championIndex].health,
@@ -102,15 +101,14 @@ contract Roster is ERC721, Ownable {
         );
 
         uint256 tokenId = userRoster[_rosterIndex];
-
         SelectedChampion[msg.sender] = tokenId;
     }
 
     /*
      * @dev Function to get selected champion
      */
-    function getSelectedChampion() public view returns (uint256) {
-        return SelectedChampion[msg.sender];
+    function getSelectedChampion(address sender) public view returns (uint256) {
+        return SelectedChampion[sender];
     }
 
     function tokenURI(uint256 _tokenId)
@@ -150,5 +148,15 @@ contract Roster is ERC721, Ownable {
         );
 
         return output;
+    }
+
+    function healChampion(uint256 tokenId) public {
+        Champion storage champion = NftHolderChampion[tokenId];
+        champion.health += champion.healPower;
+    }
+
+    function damageChampion(uint256 tokenId, uint256 damage) public {
+        Champion storage champion = NftHolderChampion[tokenId];
+        champion.health -= damage;
     }
 }

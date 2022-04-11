@@ -2,6 +2,7 @@ const { expect } = require("chai");
 
 describe("MMO Game contract", function () {
   let MMOGameContractFactory;
+  let ArenaContractFactory;
   let ChampionFactoryContractFactory
   let BossFactoryContractFactory
   let contract;
@@ -35,26 +36,32 @@ describe("MMO Game contract", function () {
   async function addChampionToRosterHelper() {
     await addChampionHelper();
 
-    await contract.addChampionToRoster(0);
-    await contract.setSelectChampion(0);
+    await rosterContract.addChampionToRoster(0);
+    await rosterContract.setSelectChampion(0);
   }
 
   beforeEach(async function () {
     MMOGameContractFactory = await ethers.getContractFactory("MMOGame");
+    ArenaContractFactory = await ethers.getContractFactory("Arena");
     ChampionFactoryContractFactory = await ethers.getContractFactory(
       "ChampionFactory"
     );
     BossFactoryContractFactory = await ethers.getContractFactory("BossFactory");
+    RosterContractFactory = await ethers.getContractFactory("Roster");
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
 
     contract = await MMOGameContractFactory.deploy();
+    arenaContract = await ArenaContractFactory.deploy();
     championFactoryContract = await ChampionFactoryContractFactory.deploy();
     bossFactoryContract = await BossFactoryContractFactory.deploy();
+    rosterContract = await RosterContractFactory.deploy();
 
     await contract.deployed();
     await championFactoryContract.deployed();
     await bossFactoryContract.deployed();
-    await contract.setChampionFactory(championFactoryContract.address);
+    await rosterContract.deployed();
+    await rosterContract.setChampionFactory(championFactoryContract.address);
+    await contract.setRoster(rosterContract.address);
     await contract.setBossFactory(bossFactoryContract.address);
   });
 

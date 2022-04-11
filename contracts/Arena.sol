@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: GNU
 pragma solidity ^0.8.1;
 
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "hardhat/console.sol";
+
 import "./Roster.sol";
 import "./BossFactory.sol";
 
@@ -8,6 +11,7 @@ struct ArenaStruct {
     mapping(address => uint256) userToChampionId;
     uint256[] championIdList;
     uint256 bossIndex;
+    Boss boss;
     ArenaState state;
     uint256 lastArenaFinishedOn;
 }
@@ -18,8 +22,9 @@ enum ArenaState {
     FINISHED
 }
 
-contract Arena is Roster {
+contract Arena is Ownable {
     BossFactory public _bossFactory;
+    Roster public _roster;
 
     // The active arena
     ArenaStruct public ActiveArena;
@@ -35,6 +40,13 @@ contract Arena is Roster {
         _bossFactory = BossFactory(bossFactoryAddress);
     }
 
+    /*
+     * @dev Function to set Roster
+     */
+    function setRoster(address rosterAddress) public onlyOwner {
+        _roster = Roster(rosterAddress);
+    }
+
     constructor() {
         // Initialize the state of the arena.
         ActiveArena.state = ArenaState.NOT_STARTED;
@@ -45,11 +57,11 @@ contract Arena is Roster {
      * or create a new arena if there is no arena yet.
      */
     function addChampionToArena() public {
-        uint256 tokenId = SelectedChampion[msg.sender];
+        uint256 tokenId = _roster.getSelectedChampion(msg.sender);
 
         // Dead champion can't be added to arena.
         require(
-            NftHolderChampion[tokenId].health != 0,
+            _roster.getNFTChampion(tokenId).health != 0,
             "Champion is dead, cannot add to arena"
         );
 
@@ -70,7 +82,10 @@ contract Arena is Roster {
                 newBossIndex = 0;
             }
 
-            ActiveArena.bossIndex = newBossIndex;
+            Boss memory newBoss = bossList[newBossIndex];
+            console.log(newBoss.name);
+
+            ActiveArena.boss = newBoss;
             ActiveArena.state = ArenaState.IN_PROGRESS;
 
             emit ArenaStarted(bossIndex);
@@ -83,23 +98,25 @@ contract Arena is Roster {
     }
 
     /*
-     * @dev Get actual arena state
+     * @dev Get the full arena state
      */
-    function getArenaChampionList() public view returns (uint256[] memory) {
-        return ActiveArena.championIdList;
+    function getArena()
+        public
+        view
+        returns (
+            uint256[] memory,
+            Boss memory,
+            ArenaState
+        )
+    {
+        return (
+            ActiveArena.championIdList,
+            ActiveArena.boss,
+            ActiveArena.state
+        );
     }
 
-    /*
-     * @dev Get actual boss from the arena
-     */
-    function getArenaBoss() public view returns (Boss memory) {
-        return _bossFactory.getBossList()[ActiveArena.bossIndex];
-    }
-
-    /*
-     * @dev Get actual state of the arena
-     */
-    function getArenaState() public view returns (ArenaState) {
-        return ActiveArena.state;
+    function damageBoss(uint256 damage) public {
+        ActiveArena.boss.health -= damage;
     }
 }

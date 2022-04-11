@@ -17,11 +17,10 @@ contract MMOGame is Arena {
      * @dev Attack the boss
      */
     function attack() public checks {
-        uint256 tokenId = SelectedChampion[msg.sender];
+        uint256 tokenId = _roster.getSelectedChampion(msg.sender);
 
-        Champion storage champion = NftHolderChampion[tokenId];
-        Boss[] memory bossList = _bossFactory.getBossList();
-        Boss memory boss = bossList[ActiveArena.bossIndex];
+        Champion memory champion = _roster.getNFTChampion(tokenId);
+        Boss storage boss = ActiveArena.boss;
 
         // Check if the boss is dead with next attack
         if (boss.health < champion.attackPower) {
@@ -31,12 +30,12 @@ contract MMOGame is Arena {
             emit ArenaFinished();
         } else {
             // Attack the boss
-            boss.health -= champion.attackPower;
+            damageBoss(champion.attackPower);
             emit AttackComplete(boss.health);
 
             // Boss attacks!
-            champion.health -= boss.attackPower;
-            emit BossAttackComplete(tokenId, champion.health);
+            _roster.damageChampion(tokenId, boss.attackPower);
+            emit BossAttackComplete(tokenId, _roster.getNFTChampion(tokenId).health);
         }
     }
 
@@ -44,24 +43,22 @@ contract MMOGame is Arena {
      * @dev Heal yourself
      */
     function heal() public checks {
-        uint256 tokenId = SelectedChampion[msg.sender];
+        uint256 tokenId = _roster.getSelectedChampion(msg.sender);
 
-        Champion storage champion = NftHolderChampion[tokenId];
+        _roster.healChampion(tokenId);
 
-        champion.health += champion.healPower;
-
-        emit HealComplete(tokenId, champion.health);
+        emit HealComplete(tokenId, _roster.getNFTChampion(tokenId).health);
     }
 
     modifier checks() {
-        uint256 tokenId = SelectedChampion[msg.sender];
+        uint256 tokenId = _roster.getSelectedChampion(msg.sender);
 
         // Check if the user is the champion in the arena
         require(tokenId > 0, "User has not a champion in the arena");
 
         // Check if the champion is alive
         require(
-            NftHolderChampion[tokenId].health != 0,
+            _roster.getNFTChampion(tokenId).health != 0,
             "Champion is dead, cannot attack"
         );
 

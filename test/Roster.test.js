@@ -57,7 +57,7 @@ describe("Roster contract", function () {
 
       await contract.setSelectChampion(0);
 
-      const selectedChampion = await contract.getSelectedChampion();
+      const selectedChampion = await contract.getSelectedChampion(owner.address);
       expect(selectedChampion).to.be.not.undefined;
       expect(selectedChampion).to.be.not.null;
     });
