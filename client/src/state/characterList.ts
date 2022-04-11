@@ -2,13 +2,13 @@ import { atom } from "jotai";
 import { transformCharacterData } from "../Common";
 
 import { Champion } from "../Models";
-import { ContractAtom, ChampionFactoryContractAtom } from "./wallet";
+import { ChampionFactoryContractAtom, RosterContractAtom } from "./wallet";
 
 export const characterListAtom = atom<Champion[]>([]);
 export const mintingCharacterAtom = atom<boolean>(false);
 
 export const mintCharacterNFTAtom = atom(null, async (get, set, update) => {
-  const contract = get(ContractAtom);
+  const contract = get(RosterContractAtom);
   try {
     set(mintingCharacterAtom, true);
     if (contract) {

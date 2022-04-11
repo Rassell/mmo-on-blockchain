@@ -2,7 +2,7 @@ import { BigNumber } from "ethers";
 import { atom } from "jotai";
 
 import { MMOCharacterData, transformCharacterData } from "../Common";
-import { AccountAtom, ContractAtom } from "./wallet";
+import { AccountAtom, RosterContractAtom } from "./wallet";
 
 export const RosterAtom = atom<MMOCharacterData[]>([]);
 export const SelectedChampionIdAtom = atom<number>(-1);
@@ -11,7 +11,7 @@ export const selectChampionAtom = atom(
   null,
   async (get, set, rosterId: number) => {
     console.log("Selecting champion:", rosterId);
-    const contract = get(ContractAtom);
+    const contract = get(RosterContractAtom);
     const currentAccount = get(AccountAtom);
     if (!contract || !currentAccount) return;
 
@@ -28,14 +28,16 @@ export const selectChampionAtom = atom(
 );
 
 export const initRosterAtom = atom(null, async (get, set) => {
-  const contract = get(ContractAtom);
+  const contract = get(RosterContractAtom);
   const currentAccount = get(AccountAtom);
   if (!contract || !currentAccount) return;
 
   const roster = await contract.getUserRoster();
   console.log("Roster:", roster);
 
-  const championId: BigNumber = await contract.getSelectedChampion();
+  const championId: BigNumber = await contract.getSelectedChampion(
+    currentAccount
+  );
   set(SelectedChampionIdAtom, championId.toNumber());
   console.log("Selected Champion id:", championId.toNumber());
 

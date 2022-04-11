@@ -1,7 +1,6 @@
 import { BigNumber } from "ethers";
 import { atom } from "jotai";
 
-import { arenaBossAtom } from "./arena";
 import { ContractAtom } from "./wallet";
 
 export const loadingAttackAtom = atom<boolean>(false);
@@ -13,10 +12,10 @@ export const receiverBattleAtom = atom(null, async (get, set) => {
     contract.on("AttackComplete", (bossHealth: BigNumber) => {
       const bossHealthNumber = bossHealth.toNumber();
       console.log("Receiver: Attack Complete!", bossHealthNumber);
-      set(arenaBossAtom, {
-        ...get(arenaBossAtom)!,
-        health: bossHealthNumber,
-      });
+      // set(arenaBossAtom, {
+      //   ...get(arenaBossAtom),
+      //   health: bossHealthNumber,
+      // });
     });
     contract.on(
       "HealComplete",
