@@ -1,14 +1,16 @@
 async function main() {
   // const championFactoryContractAddress = await deployChampionFactoryContract();
   // const bossFactoryContractAddress = await deployBossFactoryContract();
-  const rosterContractAddress = await deployRosterContract(
-    "0x885cbD739bf5A87CEb7eCF3dfa7193c4628974a6"
-  );
+  // const rosterContractAddress = await deployRosterContract(
+  //   "0x885cbD739bf5A87CEb7eCF3dfa7193c4628974a6"
+  // );
 
-  await deployMMOContract(
-    "0x9af180C5FC03Fd9c0a1F0Bec34111cF498c71c7c",
-    rosterContractAddress
-  );
+  // await deployMMOContract(
+  //   "0x9af180C5FC03Fd9c0a1F0Bec34111cF498c71c7c",
+  //   "0xC431f0678aDec03906dD0f688102653cbbE77259"
+  // );
+
+  console.log("0x65CE10026F0930be42557FB20D074CE56cfA69cE");
 }
 
 async function deployChampionFactoryContract() {

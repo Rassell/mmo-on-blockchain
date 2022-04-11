@@ -83,7 +83,6 @@ contract Arena is Ownable {
             }
 
             Boss memory newBoss = bossList[newBossIndex];
-            console.log(newBoss.name);
 
             ActiveArena.boss = newBoss;
             ActiveArena.state = ArenaState.IN_PROGRESS;

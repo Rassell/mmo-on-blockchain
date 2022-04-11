@@ -94,11 +94,12 @@ describe("Arena contract", function () {
     });
 
     it('should add boss if arena "starts"', async function () {
+      await addChampionToRosterHelper();
       await addBossHelper();
+      await contract.addChampionToArena();
 
       const arena = await contract.getArena();
-      expect(arena[0]).to.not.be.undefined;
-      expect(arena[0]).to.not.be.null;
+      expect(arena[1].name).to.not.be.empty;
     });
 
     it("should emit event players when arena started", async function () {
