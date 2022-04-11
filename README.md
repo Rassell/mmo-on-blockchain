@@ -5,8 +5,8 @@ Another blockchain example project!
 Deployed on: https://rassell.github.io/mmo-on-blockchain to use it with Rinkeby testnet.
 
 TODOS:
- - Review public for externals methods, etc
- - Add MaxHealth to champion, review tokenURI
+ - Finish combat (lol)
  - Restart health on finish arena?
  - Move images to a blockchain like solution
- - Reduce size -> Deploy contracts on different addresses!
+ - Work better solution when deploying contracts instead of using comment code
+ - Better styles on page...
