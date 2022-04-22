@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const contractsDir = path.join(__dirname, "/../../client/src/assets");
+const contractsDir = path.join(__dirname, "/../client/src/assets");
 
 if (!fs.existsSync(contractsDir)) {
   fs.mkdirSync(contractsDir);
