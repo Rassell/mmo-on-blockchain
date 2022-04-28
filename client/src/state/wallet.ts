@@ -3,7 +3,7 @@ import { atom } from "jotai";
 
 import { mmoGame, championFactory, roster } from "../assets";
 const contractAddress = "0x65CE10026F0930be42557FB20D074CE56cfA69cE";
-const rosterContractAddress = "0xC431f0678aDec03906dD0f688102653cbbE77259";
+const rosterContractAddress = "0xF9A2068390403bA796F5cDe72C5b99ba82AFb51e";
 const championContractAddress = "0x885cbD739bf5A87CEb7eCF3dfa7193c4628974a6";
 
 export const LoadingInitWeb3Atom = atom(false);
