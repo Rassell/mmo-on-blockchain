@@ -32,7 +32,10 @@ contract Roster is ERC721, Ownable {
     /*
      * @dev Function to set Champion Factory
      */
-    function setChampionFactory(address championFactoryAddress) public onlyOwner {
+    function setChampionFactory(address championFactoryAddress)
+        public
+        onlyOwner
+    {
         _championFactory = ChampionFactory(championFactoryAddress);
     }
 
@@ -46,6 +49,17 @@ contract Roster is ERC721, Ownable {
      */
     function getUserRoster() public view returns (uint256[] memory) {
         return _userRoster[msg.sender];
+    }
+
+    /*
+     * @dev Function to return the roster of the user.
+     */
+    function getRosterByAddress(address sender)
+        public
+        view
+        returns (uint256[] memory)
+    {
+        return _userRoster[sender];
     }
 
     /*

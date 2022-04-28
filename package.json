@@ -9,7 +9,8 @@
     "test": "npm run build && hardhat test",
     "deploy": "hardhat run scripts/deploy.js --network rinkeby && npm run copyContract",
     "add:champion": "hardhat run scripts/addChampion.js --network rinkeby",
-    "add:boss": "hardhat run scripts/addBoss.js --network rinkeby"
+    "add:boss": "hardhat run scripts/addBoss.js --network rinkeby",
+    "updateContract": "hardhat run scripts/updateContract.js --network rinkeby"
   },
   "keywords": [
     "mmo",

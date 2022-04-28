@@ -7,7 +7,7 @@ async function main() {
 
   // await deployMMOContract(
   //   "0x9af180C5FC03Fd9c0a1F0Bec34111cF498c71c7c",
-  //   "0xC431f0678aDec03906dD0f688102653cbbE77259"
+  //   "0xF9A2068390403bA796F5cDe72C5b99ba82AFb51e"
   // );
 
   console.log("0x65CE10026F0930be42557FB20D074CE56cfA69cE");
