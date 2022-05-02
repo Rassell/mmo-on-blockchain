@@ -1,6 +1,6 @@
 import { useAtom } from "jotai";
 import React, { useEffect } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { MemoryRouter, Routes, Route } from "react-router-dom";
 
 import Layout from "./components/Layout";
 import LoadingIndicator from "./components/LoadingIndicator";
@@ -65,7 +65,7 @@ export default function App() {
   };
 
   return (
-    <BrowserRouter>
+    <MemoryRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
@@ -85,6 +85,6 @@ export default function App() {
           />
         </Route>
       </Routes>
-    </BrowserRouter>
+    </MemoryRouter>
   );
 }
