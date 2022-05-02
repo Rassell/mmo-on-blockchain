@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/mmo-on-blockchain/static/css/main.d8549b34.css",
-    "main.js": "/mmo-on-blockchain/static/js/main.6691206d.js",
+    "main.js": "/mmo-on-blockchain/static/js/main.61dfbc99.js",
     "static/media/sword.png": "/mmo-on-blockchain/static/media/sword.9dcb578aba8fec9d0666.png",
     "static/media/healPower.png": "/mmo-on-blockchain/static/media/healPower.d2208ffca9422f94819b.png",
     "index.html": "/mmo-on-blockchain/index.html",
     "main.d8549b34.css.map": "/mmo-on-blockchain/static/css/main.d8549b34.css.map",
-    "main.6691206d.js.map": "/mmo-on-blockchain/static/js/main.6691206d.js.map"
+    "main.61dfbc99.js.map": "/mmo-on-blockchain/static/js/main.61dfbc99.js.map"
   },
   "entrypoints": [
     "static/css/main.d8549b34.css",
-    "static/js/main.6691206d.js"
+    "static/js/main.61dfbc99.js"
   ]
 }
